@@ -1,5 +1,7 @@
 <template>
-  <div>
-    <h1>Another Website Routed</h1>
-  </div>
+  <DefaultPage />
 </template>
+
+<script setup>
+import DefaultPage from '@/components/DefaultPage.vue'
+</script>
