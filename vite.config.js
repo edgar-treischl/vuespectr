@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [vue()],
-  base: process.env.VITE_BASE_URL || '/vuetemplate/',  // fallback ensures deploy never breaks
+  base: process.env.VITE_BASE_URL || '/vuespectr/',  // fallback ensures deploy never breaks
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

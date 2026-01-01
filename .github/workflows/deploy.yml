@@ -30,7 +30,7 @@ jobs:
       # 4️⃣ Build the Vue app with the correct base for GitHub Pages
       - name: Build Vue app
         env:
-          VITE_BASE_URL: /vuetemplate/   # <-- must match your repo name
+          VITE_BASE_URL: /vuespectr/   # <-- must match your repo name
         run: yarn build
 
       # 5️⃣ SPA fallback for Vue Router (so refresh works)
