@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/pages/Home.vue';
 import About from '@/pages/About.vue';
+import Plot from '@/pages/Plot.vue';
 
 
 const routes = [
@@ -13,6 +14,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About,
+  },
+    {
+    path: '/plot',
+    name: 'Plot',
+    component: Plot,
   },
   // You can add other pages here
 ];
