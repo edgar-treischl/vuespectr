@@ -6,11 +6,24 @@
 
 <script setup>
 import { onMounted, ref } from "vue"
-import { Chart as ChartJS, Tooltip, Legend, CategoryScale, LinearScale } from "chart.js"
+import {
+  Chart as ChartJS,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale
+} from "chart.js"
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix"
 import { Chart } from "vue-chartjs"
 
-ChartJS.register(CategoryScale, LinearScale, Tooltip, Legend, MatrixController, MatrixElement)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  MatrixController,
+  MatrixElement
+)
 
 const chartData = ref({ datasets: [] })
 const options = ref({})
@@ -20,78 +33,116 @@ onMounted(async () => {
   const response = await fetch("data/meta.json")
   const meta = await response.json()
 
-  // 2️⃣ Transform to rawData
-  const rawData = meta.penguins.map(item => ({
-    version: item.version,
-    column_name: item.column_name,
-    present: true
-  }))
+  // 2️⃣ Extract unique versions & columns
+  const versions = [...new Set(meta.penguins.map(p => p.version))]
+  const columns = [...new Set(meta.penguins.map(p => p.column_name))]
 
-  // 3️⃣ Get unique versions and columns
-  const versions = [...new Set(rawData.map(d => d.version))]
-  const columns = [...new Set(rawData.map(d => d.column_name))]
+  // 3️⃣ Build lookup for fast presence check
+  const presenceSet = new Set(
+    meta.penguins.map(p => `${p.version}||${p.column_name}`)
+  )
 
-  // 4️⃣ Build presenceData for Chart.js matrix
-  const padding = 2
-  const presenceData = []
+  // 4️⃣ Build FULL matrix (missing = false)
+  const matrixData = []
 
-  columns.forEach((col, colIdx) => {
-    versions.forEach((ver, verIdx) => {
-      const entry = rawData.find(d => d.version === ver && d.column_name === col)
-      const isPresent = entry ? entry.present : false
-      presenceData.push({
-        x: verIdx,
-        y: columns.length - 1 - colIdx,
-        present: isPresent
+  columns.forEach(col => {
+    versions.forEach(ver => {
+      matrixData.push({
+        x: ver,
+        y: col,
+        present: presenceSet.has(`${ver}||${col}`)
       })
     })
   })
 
-  // 5️⃣ Chart dataset
+  // 5️⃣ Dataset
   chartData.value = {
     datasets: [
       {
         label: "Column Presence",
-        data: presenceData,
-        width: ctx => ctx.chart.scales.x.getPixelForTick(1) - ctx.chart.scales.x.getPixelForTick(0) - padding,
-        height: ctx => ctx.chart.scales.y.getPixelForTick(0) - ctx.chart.scales.y.getPixelForTick(1) - padding,
-        backgroundColor: ctx => ctx.dataset.data[ctx.dataIndex].present ? "#31572c" : "#d00000",
-        borderColor: "white",
+        data: matrixData,
+
+        width: ({ chart }) =>
+          chart.chartArea.width / versions.length - 2,
+
+        height: ({ chart }) =>
+          chart.chartArea.height / columns.length - 2,
+
+        backgroundColor: ctx =>
+          ctx.raw.present ? "#31572c" : "#d00000",
+
+        borderColor: "#ffffff",
         borderWidth: 1
       }
     ]
   }
 
-  // 6️⃣ Chart options
+  // 6️⃣ Options
   options.value = {
     responsive: true,
     maintainAspectRatio: false,
+
+    // ✅ Reserve space for axes + legend
+    layout: {
+      padding: {
+        top: 24,
+        right: 24,
+        bottom: 56,
+        left: 48
+      }
+    },
+
     plugins: {
-      legend: { display: false },
+      legend: {
+        position: "bottom",
+        align: "center",
+        labels: {
+          boxWidth: 14,
+          padding: 16,
+          generateLabels: () => [
+            { text: "Present", fillStyle: "#31572c" },
+            { text: "Missing", fillStyle: "#d00000" }
+          ]
+        }
+      },
+
       tooltip: {
+        backgroundColor: "#000",
         callbacks: {
           label: ctx => {
-            const item = ctx.dataset.data[ctx.dataIndex]
-            const col = columns[columns.length - 1 - item.y]
-            const ver = versions[item.x]
-            return `${col} - ${ver}: ${item.present ? "Yes" : "No"}`
+            const { x, y, present } = ctx.raw
+            return `${y} (${x}): ${present ? "Present" : "Missing"}`
           }
         }
       }
     },
+
     scales: {
       x: {
         type: "category",
         labels: versions,
         offset: true,
-        ticks: { maxRotation: 45, minRotation: 45 },
-        title: { display: true, text: "Version" }
+        ticks: {
+          padding: 8
+        },
+        title: {
+          display: true,
+          text: "Version",
+          padding: { top: 10 }
+        }
       },
       y: {
         type: "category",
-        labels: columns.slice().reverse(),
+        labels: columns,
         offset: true,
-        title: { display: true, text: "Column" }
+        ticks: {
+          padding: 8
+        },
+        title: {
+          display: true,
+          text: "Column",
+          padding: { bottom: 10 }
+        }
       }
     }
   }
@@ -101,5 +152,7 @@ onMounted(async () => {
 <style scoped>
 .chart-container {
   height: 400px;
+  position: relative;
+  overflow: visible; /* 🔑 prevents label clipping */
 }
 </style>
