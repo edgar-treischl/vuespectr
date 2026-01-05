@@ -4,6 +4,7 @@ import About from '@/pages/About.vue';
 import Variables from '@/pages/Variables.vue';
 import Pipe from '@/pages/Pipe.vue';
 import Classes from '@/pages/Classes.vue';
+import Test from '@/pages/Test.vue';
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/pipe',
     name: 'Pipe',
     component: Pipe,
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: Test,
   },
   // You can add other pages here
 ];
