@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/pages/Home.vue';
 import About from '@/pages/About.vue';
-import Plot from '@/pages/Plot.vue';
-
+import Variables from '@/pages/Variables.vue';
+import Pipe from '@/pages/Pipe.vue';
 
 const routes = [
   {
@@ -15,10 +15,15 @@ const routes = [
     name: 'About',
     component: About,
   },
-    {
-    path: '/plot',
-    name: 'Plot',
-    component: Plot,
+  {
+    path: '/variables',
+    name: 'Variables',
+    component: Variables,
+  },
+  {
+    path: '/pipe',
+    name: 'Pipe',
+    component: Pipe,
   },
   // You can add other pages here
 ];

@@ -65,7 +65,9 @@ const logoSrc = import.meta.env.BASE_URL + 'images/vite.svg'
 // Navigation items
 const navItems = [
   { label: 'About', to: '/about', icon: 'mdi-information' },
-  { label: 'Plot', to: '/plot', icon: 'mdi-exclamation' },
+  { label: 'Variables', to: '/variables', icon: 'mdi-exclamation' },
+  { label: 'Pipe', to: '/pipe', icon: 'mdi-label' },
+
 ]
 </script>
 

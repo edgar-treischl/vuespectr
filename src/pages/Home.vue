@@ -1,7 +1,6 @@
 <template>
   <v-container class="fill-height">
     <v-row justify="center" align="center">
-      <PipeValidationHeatmap />
       <v-col cols="12" md="6">
         <v-card class="pa-6">
           <h2 class="mb-4">Welcome</h2>
@@ -42,7 +41,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
-import PipeValidationHeatmap from "@/components/PipeValidationHeatmap.vue"
 
 const router = useRouter()
 const store = useAppStore()
