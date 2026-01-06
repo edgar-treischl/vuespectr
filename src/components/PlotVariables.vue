@@ -18,10 +18,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 
 const chart = ref(null);
+let chartInstance = null;
+let observer = null;
 
 const truncateText = (text, maxChars) => {
   if (!text) return "";
@@ -30,7 +32,7 @@ const truncateText = (text, maxChars) => {
 };
 
 onMounted(async () => {
-  const chartInstance = echarts.init(chart.value);
+  chartInstance = echarts.init(chart.value);
 
   // 1️⃣ Fetch JSON
   const response = await fetch("data/meta.json");
@@ -51,9 +53,8 @@ onMounted(async () => {
     versions.forEach((ver, x) => {
       const present = presenceSet.has(`${ver}||${col}`);
       data.push({
-        value: [x, y, present ? 1 : 0], // required numeric value
-        labelText: present ? "Present" : "Missing",
-        color: present ? "#31572c" : "#d00000"
+        value: [x, y, present ? 1 : 0], // numeric value
+        color: present ? "#31572c" : "#d00000",
       });
     });
   });
@@ -76,7 +77,7 @@ onMounted(async () => {
     xAxis: {
       type: "category",
       data: versions,
-      axisLabel: { rotate: 30, fontSize: 14, color: "#333" },
+      axisLabel: { rotate: 0, fontSize: 14, color: "#333" },
       axisLine: { lineStyle: { color: "#888" } }
     },
     yAxis: {
@@ -87,10 +88,10 @@ onMounted(async () => {
       axisLine: { lineStyle: { color: "#888" } }
     },
     grid: {
-      left: "15%",
-      right: "5%",
-      top: "15%",
-      bottom: "15%",
+      left: "10%",
+      right: "10%",
+      top: "10%",
+      bottom: "10%",
       containLabel: true
     },
     series: [
@@ -105,12 +106,6 @@ onMounted(async () => {
           fontWeight: 600,
           align: "center",
           verticalAlign: "middle"
-        },
-        emphasis: {
-          itemStyle: {
-            borderColor: "#000",
-            borderWidth: 1
-          }
         },
         itemStyle: {
           borderColor: "#fff",
@@ -128,7 +123,17 @@ onMounted(async () => {
   };
 
   chartInstance.setOption(option);
-  window.addEventListener("resize", () => chartInstance.resize());
+
+  // 7️⃣ ResizeObserver for parent width changes (sidebar toggle safe)
+  observer = new ResizeObserver(() => {
+    chartInstance?.resize();
+  });
+  observer.observe(chart.value);
+});
+
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  chartInstance?.dispose();
 });
 </script>
 

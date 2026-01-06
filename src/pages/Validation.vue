@@ -26,11 +26,11 @@
                 <v-btn
                   block
                   color="success"
-                  outlined
+                  variant="outlined"
                   :disabled="!html"
                   @click="downloadReport"
                 >
-                  <v-icon left>mdi-download</v-icon>
+                  <v-icon start>mdi-download</v-icon>
                   Download Report
                 </v-btn>
                 <p class="small-text muted">
@@ -44,21 +44,22 @@
             </div>
           </template>
 
-          <!-- Main slot -->
-          <template #main>
-            <div v-if="!loaded && !error" class="d-flex justify-center align-center loading-state">
-              <v-progress-circular indeterminate color="primary"></v-progress-circular>
-              <span class="ml-2">Loading validation report…</span>
-            </div>
+          <!-- Main content (DEFAULT SLOT) -->
+          <div
+            v-if="!loaded && !error"
+            class="d-flex justify-center align-center loading-state"
+          >
+            <v-progress-circular indeterminate color="primary" />
+            <span class="ml-2">Loading validation report…</span>
+          </div>
 
-            <div v-else-if="error" class="error">
-              <v-icon color="error" size="36">mdi-alert-circle</v-icon>
-              <h5 class="mt-2">Report Not Available</h5>
-              <p>{{ error }}</p>
-            </div>
+          <div v-else-if="error" class="error">
+            <v-icon color="error" size="36">mdi-alert-circle</v-icon>
+            <h5 class="mt-2">Report Not Available</h5>
+            <p>{{ error }}</p>
+          </div>
 
-            <div v-else v-html="html"></div>
-          </template>
+          <div v-else v-html="html" />
         </SidebarLayout>
       </v-col>
     </v-row>
@@ -84,12 +85,16 @@ onMounted(async () => {
       .filter(p => p.table === "penguins" && p.report_path)
       .sort((a, b) => b.version.localeCompare(a.version));
 
-    if (!penguins.length) throw new Error("No validation report found for penguins");
+    if (!penguins.length) {
+      throw new Error("No validation report found for penguins");
+    }
 
     const latest = penguins[0];
 
-    const reportRes = await fetch(`${latest.report_path}`);
-    if (!reportRes.ok) throw new Error(`Report file not found: ${latest.report_path}`);
+    const reportRes = await fetch(latest.report_path);
+    if (!reportRes.ok) {
+      throw new Error(`Report file not found: ${latest.report_path}`);
+    }
 
     html.value = await reportRes.text();
   } catch (e) {
@@ -100,7 +105,6 @@ onMounted(async () => {
   }
 });
 
-// Function to download the HTML report
 function downloadReport() {
   if (!html.value) return;
 
@@ -119,7 +123,6 @@ function downloadReport() {
 </script>
 
 <style scoped>
-/* Sidebar text styling */
 .sidebar-content {
   display: flex;
   flex-direction: column;
@@ -128,12 +131,10 @@ function downloadReport() {
   line-height: 1.5;
 }
 
-/* Download button wrapper styling */
 .download-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  background: #e8f5e9; /* subtle green background for emphasis */
+  background: #e8f5e9;
   border: 1px solid #c8e6c9;
   padding: 0.75rem 1rem;
   border-radius: 6px;
@@ -141,11 +142,9 @@ function downloadReport() {
 
 .download-wrapper .small-text {
   font-size: 0.8rem;
-  color: #4a4a4a;
   margin-top: 0.25rem;
 }
 
-/* Muted text for secondary info */
 .muted {
   color: #6c757d;
 }
@@ -154,11 +153,9 @@ function downloadReport() {
   margin-top: 1rem;
 }
 
-/* Error panel */
 .error {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   text-align: center;
   min-height: 400px;
@@ -168,12 +165,8 @@ function downloadReport() {
   border-radius: 6px;
 }
 
-/* Loading state panel */
 .loading-state {
   min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
   color: #555;
 }
