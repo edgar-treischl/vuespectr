@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h4>Labels</h4>
-    <div ref="chart" style="height: 500px; width: 100%;"></div>
+    <h4>Label Matrix (All penguins versions)</h4>
+    <div ref="chart" style="height: 600px; width: 100%;"></div>
   </div>
 </template>
 
@@ -11,46 +11,42 @@ import * as echarts from "echarts";
 
 const chart = ref(null);
 
-// Utility to truncate long text
+// Smart truncate: split long text into lines of max n chars
 const truncateText = (text, n) => {
   if (!text) return "";
-  return text.length > n ? text.slice(0, n - 3) + "..." : text;
+  const parts = [];
+  let remaining = text;
+  while (remaining.length > n) {
+    parts.push(remaining.slice(0, n));
+    remaining = remaining.slice(n);
+  }
+  if (remaining.length) parts.push(remaining);
+  return parts.join("\n"); // line breaks inside tile
 };
 
 onMounted(async () => {
   try {
-    // Load JSON
     const res = await fetch("data/columns.json");
     if (!res.ok) throw new Error("columns.json not found");
-    const json = await res.json(); // <-- FIXED: parse JSON
+    const json = await res.json();
 
-    // Filter for penguins factor columns
     const allColumns = json.columns.filter(c => c.table === "penguins" && c.type === "factor");
-
     if (!allColumns.length) throw new Error("No factor columns found");
 
-    // All versions sorted
     const versions = Array.from(new Set(allColumns.map(c => c.version))).sort();
-
-    // All column names sorted
     const columns = Array.from(new Set(allColumns.map(c => c.column_name))).sort();
 
-    // Build signatures per column/version
     const signatureMap = {};
     columns.forEach(col => {
       signatureMap[col] = {};
       versions.forEach(ver => {
         const colData = allColumns.find(c => c.column_name === col && c.version === ver);
-        if (colData?.levels) {
-          const levels = colData.levels.split(/\s*,\s*/).sort();
-          signatureMap[col][ver] = levels.join(", "); // full label text
-        } else {
-          signatureMap[col][ver] = "";
-        }
+        signatureMap[col][ver] = colData?.levels
+          ? colData.levels.split(/\s*,\s*/).sort().join(", ")
+          : "";
       });
     });
 
-    // Build heatmap data [xIndex, yIndex, changedFlag]
     const seriesData = [];
     columns.forEach((col, yIndex) => {
       let prevSig = null;
@@ -62,31 +58,38 @@ onMounted(async () => {
       });
     });
 
-    // Configure ECharts
     const option = {
       tooltip: {
+        backgroundColor: "#333",
+        borderColor: "#555",
+        borderWidth: 1,
+        textStyle: { color: "#fff", fontSize: 13 },
         formatter: params => {
           const col = columns[params.data[1]];
           const ver = versions[params.data[0]];
           const sig = signatureMap[col][ver];
-          return `<b>${col}</b><br>${ver}<br>${sig}`;
+          return `<b>${col}</b><br><i>${ver}</i><br>${sig}`;
         },
       },
       xAxis: {
         type: "category",
-        data: versions.map(v => truncateText(v, 14)),
-        axisLabel: { rotate: 45 },
+        data: versions.map(v => truncateText(v, 10)),
+        axisLabel: { rotate: 0, fontSize: 12, color: "#333" },
+        splitLine: { show: false },
       },
       yAxis: {
         type: "category",
         data: columns,
+        axisLabel: { fontSize: 12, color: "#333" },
+        inverse: true,
+        splitLine: { show: true, lineStyle: { color: "#eee" } },
       },
-      grid: { left: "20%", right: "10%", top: "10%", bottom: "20%" },
+      grid: { left: "20%", right: "5%", top: "10%", bottom: "20%" },
       visualMap: {
         min: 0,
         max: 1,
         show: false,
-        inRange: { color: ["#31572c", "#d00000"] }, // 0=green, 1=red
+        inRange: { color: ["#31572c", "#d00000"] },
       },
       series: [
         {
@@ -95,11 +98,24 @@ onMounted(async () => {
           label: {
             show: true,
             color: "#fff",
+            fontSize: 14, // increased font
             formatter: params => {
               const col = columns[params.data[1]];
               const ver = versions[params.data[0]];
-              return truncateText(signatureMap[col][ver], 20);
+              return truncateText(signatureMap[col][ver], 18); // truncate per line
             },
+            lineHeight: 16, // spacing between lines
+          },
+          emphasis: {
+            itemStyle: {
+              borderColor: "#fff",
+              borderWidth: 1,
+            },
+          },
+          itemStyle: {
+            borderColor: "#fff",
+            borderWidth: 1,
+            borderRadius: 4,
           },
         },
       ],
@@ -117,5 +133,7 @@ onMounted(async () => {
 <style scoped>
 h4 {
   margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #444;
 }
 </style>
