@@ -33,6 +33,7 @@
           </v-btn>
         </v-card>
       </v-col>
+      <PointerOverviewTable />
     </v-row>
   </v-container>
 </template>
@@ -41,6 +42,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
+import PointerOverviewTable from '../components/PointerOverviewTable.vue'
+
 
 const router = useRouter()
 const store = useAppStore()
