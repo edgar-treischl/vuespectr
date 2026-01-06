@@ -74,7 +74,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "species",
       "label": "Penguin species",
       "type": "factor",
@@ -83,7 +83,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "island",
       "label": "Island name",
       "type": "factor",
@@ -92,7 +92,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "bill_length_mm",
       "label": "Bill length (mm)",
       "type": "numeric",
@@ -101,7 +101,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "bill_depth_mm",
       "label": "Bill depth (mm)",
       "type": "numeric",
@@ -110,7 +110,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "flipper_length_mm",
       "label": "Flipper length (mm)",
       "type": "integer",
@@ -119,7 +119,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "body_mass_g",
       "label": "Body mass (g)",
       "type": "integer",
@@ -128,7 +128,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "sex",
       "label": "Sex",
       "type": "factor",
@@ -137,7 +137,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "column_name": "year",
       "label": "Year",
       "type": "integer",

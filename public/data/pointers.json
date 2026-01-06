@@ -13,7 +13,7 @@
     },
     {
       "table": "penguins",
-      "version": "2025-08-20T13-52-15",
+      "version": "2024-08-20T13-52-15",
       "status": "Pass",
       "schema_hash": "1ae34c54d71f9540a5bcc2812d8dca1b",
       "data_hash": "c512f6894bf856e3129272daf34692b6",

@@ -24,33 +24,73 @@
         ></v-select>
       </v-col>
 
-      <!-- Right column: table component -->
+      <!-- Right column: filtered table -->
       <v-col cols="12" md="8" class="pa-4">
-        <PointerOverviewTable />
+        <PointerOverviewTable
+          :selectedTable="store.table"
+          :selectedVersion="store.version"
+        />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { useAppStore } from '@/stores/app'
-import PointerOverviewTable from '../components/PointerOverviewTable.vue'
+import { ref, onMounted, watch } from "vue";
+import { useAppStore } from "@/stores/app";
+import PointerOverviewTable from "../components/PointerOverviewTable.vue";
 
-// Pinia store
-const store = useAppStore()
+const store = useAppStore();
 
-// Dropdown options
-const tableOptions = ['TestTable', 'Users', 'Orders', 'Products']
-const versionOptions = ['v1', 'v2', 'v3']
+const tableOptions = ref([]);
+const versionOptions = ref([]);
 
-// Defaults
-if (!store.table) store.table = tableOptions[0]
-if (!store.version) store.version = versionOptions[0]
-</script>
+// Keep track of all pointers
+let allPointers = [];
 
-<style scoped>
-/* Optional minimal styling */
-h4 {
-  margin-bottom: 1rem;
+onMounted(async () => {
+  // Fetch pointers JSON
+  const res = await fetch("data/pointers.json");
+  const json = await res.json();
+
+  allPointers = json.pointers;
+
+  // Get unique tables
+  const tables = Array.from(new Set(allPointers.map(p => p.table).filter(Boolean)));
+  tableOptions.value = tables;
+
+  // Pick default table/version only if store is empty
+  if (!store.table || !store.version) {
+    const defaultTable = tables[0];
+    const versionsForTable = allPointers
+      .filter(p => p.table === defaultTable)
+      .map(p => p.version)
+      .filter(Boolean)
+      .sort((a, b) => b.localeCompare(a)); // latest first
+
+    store.table = defaultTable;
+    store.version = versionsForTable[0];
+  } else {
+    // If store has a table, populate versionOptions for it
+    updateVersionOptions(store.table);
+  }
+});
+
+// Update version options whenever table changes
+watch(() => store.table, (newTable) => {
+  updateVersionOptions(newTable);
+});
+
+function updateVersionOptions(table) {
+  versionOptions.value = allPointers
+    .filter(p => p.table === table)
+    .map(p => p.version)
+    .filter(Boolean)
+    .sort((a, b) => b.localeCompare(a)); // latest first
+
+  // If current version not in options, pick latest
+  if (!versionOptions.value.includes(store.version)) {
+    store.version = versionOptions.value[0];
+  }
 }
-</style>
+</script>

@@ -21,7 +21,6 @@
                 <li>Results indicate pass, fail, or warning states.</li>
               </ul>
 
-              <!-- Download button -->
               <div class="download-wrapper">
                 <v-btn
                   block
@@ -44,11 +43,8 @@
             </div>
           </template>
 
-          <!-- Main content (DEFAULT SLOT) -->
-          <div
-            v-if="!loaded && !error"
-            class="d-flex justify-center align-center loading-state"
-          >
+          <!-- Main content -->
+          <div v-if="!loaded" class="d-flex justify-center align-center loading-state">
             <v-progress-circular indeterminate color="primary" />
             <span class="ml-2">Loading validation report…</span>
           </div>
@@ -56,7 +52,11 @@
           <div v-else-if="error" class="error">
             <v-icon color="error" size="36">mdi-alert-circle</v-icon>
             <h5 class="mt-2">Report Not Available</h5>
-            <p>{{ error }}</p>
+            <p>
+              Table: <strong>{{ store.table }}</strong><br />
+              Version: <strong>{{ store.version }}</strong><br />
+              {{ error }}
+            </p>
           </div>
 
           <div v-else v-html="html" />
@@ -67,43 +67,71 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
+import { useAppStore } from "@/stores/app";
 import SidebarLayout from "../components/SidebarLayout.vue";
+
+const store = useAppStore();
 
 const html = ref(null);
 const error = ref(null);
 const loaded = ref(false);
 
-onMounted(async () => {
+async function loadReport() {
+  loaded.value = false;
+  html.value = null;
+  error.value = null;
+
   try {
     const pointerRes = await fetch("data/pointers.json");
-    if (!pointerRes.ok) throw new Error("pointer.json not found");
+    if (!pointerRes.ok) throw new Error("pointers.json not found");
 
     const pointerJson = await pointerRes.json();
 
-    const penguins = pointerJson.pointers
-      .filter(p => p.table === "penguins" && p.report_path)
-      .sort((a, b) => b.version.localeCompare(a.version));
+    // Filter pointers for current table + version
+    const selection = pointerJson.pointers.find(
+      (p) => p.table === store.table && p.version === store.version
+    );
 
-    if (!penguins.length) {
-      throw new Error("No validation report found for penguins");
+    if (!selection || !selection.report_path) {
+      throw new Error("No validation report found for this selection.");
     }
 
-    const latest = penguins[0];
-
-    const reportRes = await fetch(latest.report_path);
+    const reportRes = await fetch(selection.report_path);
     if (!reportRes.ok) {
-      throw new Error(`Report file not found: ${latest.report_path}`);
+      throw new Error(`Report file not found: ${selection.report_path}`);
     }
 
     html.value = await reportRes.text();
+
+    // Wait for DOM update, then trigger lazy images (if any)
+    await nextTick();
+    const imgs = document.querySelectorAll("img[data-src]");
+    imgs.forEach((img) => {
+      img.src = img.dataset.src;
+    });
   } catch (e) {
     console.error(e);
     error.value = e.message;
   } finally {
     loaded.value = true;
   }
+}
+
+// Load report on mount
+onMounted(() => {
+  loadReport();
 });
+
+// Reload report if table/version changes
+watch(
+  () => [store.table, store.version],
+  () => {
+    if (store.table && store.version) {
+      loadReport();
+    }
+  }
+);
 
 function downloadReport() {
   if (!html.value) return;
@@ -113,7 +141,7 @@ function downloadReport() {
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = "validation_report.html";
+  a.download = `validation_report_${store.table}_${store.version}.html`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
