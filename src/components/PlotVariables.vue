@@ -1,158 +1,178 @@
 <template>
-  <div class="chart-container">
-    <Chart type="matrix" :data="chartData" :options="options" />
+  <div class="heatmap-container">
+    <h4>Column Presence Overview</h4>
+    <div ref="chart" class="chart"></div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color-box" style="background-color: #31572c;"></div>
+        <span class="legend-label">Present</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color-box" style="background-color: #d00000;"></div>
+        <span class="legend-label">Missing</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue"
-import {
-  Chart as ChartJS,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale
-} from "chart.js"
-import { MatrixController, MatrixElement } from "chartjs-chart-matrix"
-import { Chart } from "vue-chartjs"
+import { ref, onMounted } from "vue";
+import * as echarts from "echarts";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
-  MatrixController,
-  MatrixElement
-)
+const chart = ref(null);
 
-const chartData = ref({ datasets: [] })
-const options = ref({})
+const truncateText = (text, maxChars) => {
+  if (!text) return "";
+  if (text.length <= maxChars) return text;
+  return text.slice(0, maxChars - 3) + "...";
+};
 
 onMounted(async () => {
+  const chartInstance = echarts.init(chart.value);
+
   // 1️⃣ Fetch JSON
-  const response = await fetch("data/meta.json")
-  const meta = await response.json()
+  const response = await fetch("data/meta.json");
+  const meta = await response.json();
 
   // 2️⃣ Extract unique versions & columns
-  const versions = [...new Set(meta.penguins.map(p => p.version))]
-  const columns = [...new Set(meta.penguins.map(p => p.column_name))]
+  const versions = [...new Set(meta.penguins.map(p => p.version))];
+  const columns = [...new Set(meta.penguins.map(p => p.column_name))];
 
-  // 3️⃣ Build lookup for fast presence check
+  // 3️⃣ Build presence set
   const presenceSet = new Set(
     meta.penguins.map(p => `${p.version}||${p.column_name}`)
-  )
+  );
 
-  // 4️⃣ Build FULL matrix (missing = false)
-  const matrixData = []
+  // 4️⃣ Build heatmap data
+  const data = [];
+  columns.forEach((col, y) => {
+    versions.forEach((ver, x) => {
+      const present = presenceSet.has(`${ver}||${col}`);
+      data.push({
+        value: [x, y, present ? 1 : 0], // required numeric value
+        labelText: present ? "Present" : "Missing",
+        color: present ? "#31572c" : "#d00000"
+      });
+    });
+  });
 
-  columns.forEach(col => {
-    versions.forEach(ver => {
-      matrixData.push({
-        x: ver,
-        y: col,
-        present: presenceSet.has(`${ver}||${col}`)
-      })
-    })
-  })
+  // 5️⃣ Determine font size dynamically
+  const tileFontSize = Math.max(
+    12,
+    Math.min(18, 400 / Math.max(columns.length, versions.length))
+  );
 
-  // 5️⃣ Dataset
-  chartData.value = {
-    datasets: [
+  // 6️⃣ ECharts option
+  const option = {
+    tooltip: {
+      formatter: params => {
+        const col = columns[params.data.value[1]];
+        const ver = versions[params.data.value[0]];
+        return `<b>${col}</b><br>${ver}<br>${params.data.labelText}`;
+      }
+    },
+    xAxis: {
+      type: "category",
+      data: versions,
+      axisLabel: { rotate: 30, fontSize: 14, color: "#333" },
+      axisLine: { lineStyle: { color: "#888" } }
+    },
+    yAxis: {
+      type: "category",
+      data: columns,
+      inverse: true,
+      axisLabel: { fontSize: 14, color: "#333" },
+      axisLine: { lineStyle: { color: "#888" } }
+    },
+    grid: {
+      left: "15%",
+      right: "5%",
+      top: "15%",
+      bottom: "15%",
+      containLabel: true
+    },
+    series: [
       {
-        label: "Column Presence",
-        data: matrixData,
-
-        width: ({ chart }) =>
-          chart.chartArea.width / versions.length - 2,
-
-        height: ({ chart }) =>
-          chart.chartArea.height / columns.length - 2,
-
-        backgroundColor: ctx =>
-          ctx.raw.present ? "#31572c" : "#d00000",
-
-        borderColor: "#ffffff",
-        borderWidth: 1
-      }
-    ]
-  }
-
-  // 6️⃣ Options
-  options.value = {
-    responsive: true,
-    maintainAspectRatio: false,
-
-    // ✅ Reserve space for axes + legend
-    layout: {
-      padding: {
-        top: 24,
-        right: 24,
-        bottom: 56,
-        left: 48
-      }
-    },
-
-    plugins: {
-      legend: {
-        position: "bottom",
-        align: "center",
-        labels: {
-          boxWidth: 14,
-          padding: 16,
-          generateLabels: () => [
-            { text: "Present", fillStyle: "#31572c" },
-            { text: "Missing", fillStyle: "#d00000" }
-          ]
-        }
-      },
-
-      tooltip: {
-        backgroundColor: "#000",
-        callbacks: {
-          label: ctx => {
-            const { x, y, present } = ctx.raw
-            return `${y} (${x}): ${present ? "Present" : "Missing"}`
+        type: "heatmap",
+        data,
+        label: {
+          show: true,
+          formatter: params => truncateText(params.data.labelText, 10),
+          color: "#fff",
+          fontSize: tileFontSize,
+          fontWeight: 600,
+          align: "center",
+          verticalAlign: "middle"
+        },
+        emphasis: {
+          itemStyle: {
+            borderColor: "#000",
+            borderWidth: 1
           }
+        },
+        itemStyle: {
+          borderColor: "#fff",
+          borderWidth: 1,
+          borderRadius: 4
         }
       }
-    },
-
-    scales: {
-      x: {
-        type: "category",
-        labels: versions,
-        offset: true,
-        ticks: {
-          padding: 8
-        },
-        title: {
-          display: true,
-          text: "Version",
-          padding: { top: 10 }
-        }
-      },
-      y: {
-        type: "category",
-        labels: columns,
-        offset: true,
-        ticks: {
-          padding: 8
-        },
-        title: {
-          display: true,
-          text: "Column",
-          padding: { bottom: 10 }
-        }
-      }
+    ],
+    visualMap: {
+      show: false,
+      min: 0,
+      max: 1,
+      inRange: { color: ["#d00000", "#31572c"] }
     }
-  }
-})
+  };
+
+  chartInstance.setOption(option);
+  window.addEventListener("resize", () => chartInstance.resize());
+});
 </script>
 
 <style scoped>
-.chart-container {
-  height: 400px;
-  position: relative;
-  overflow: visible; /* 🔑 prevents label clipping */
+.heatmap-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.chart {
+  width: 95%;
+  height: 500px;
+}
+
+h4 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.legend {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-color-box {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  border-radius: 3px;
+}
+
+.legend-label {
+  font-size: 14px;
 }
 </style>
