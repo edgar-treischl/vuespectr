@@ -1,6 +1,7 @@
 {
   "penguins": [
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "species",
       "label": "Penguin species",
@@ -9,6 +10,7 @@
       "description": "Species of the penguin (Adelie, Chinstrap, Gentoo)"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "island",
       "label": "Island name",
@@ -17,6 +19,7 @@
       "description": "Island where the penguin was observed (Biscoe, Dream, Torgersen)"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "bill_length_mm",
       "label": "Bill length (mm)",
@@ -25,6 +28,7 @@
       "description": "Length of the penguin's bill in millimeters"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "bill_depth_mm",
       "label": "Bill depth (mm)",
@@ -33,6 +37,7 @@
       "description": "Depth of the penguin's bill in millimeters"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "flipper_length_mm",
       "label": "Flipper length (mm)",
@@ -41,6 +46,7 @@
       "description": "Length of the penguin's flipper in millimeters"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "body_mass_g",
       "label": "Body mass (g)",
@@ -49,6 +55,7 @@
       "description": "Body mass of the penguin in grams"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "sex",
       "label": "Sex",
@@ -57,6 +64,7 @@
       "description": "Sex of the penguin (male or female)"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-44-51",
       "column_name": "year",
       "label": "Year",
@@ -65,6 +73,7 @@
       "description": "Year the observation was recorded"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "species",
       "label": "Penguin species",
@@ -73,6 +82,7 @@
       "description": "Species of the penguin (Adelie, Chinstrap, Gentoo)"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "island",
       "label": "Island name",
@@ -81,6 +91,7 @@
       "description": "Island where the penguin was observed (Biscoe, Dream, Torgersen)"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "bill_length_mm",
       "label": "Bill length (mm)",
@@ -89,6 +100,7 @@
       "description": "Length of the penguin's bill in millimeters"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "bill_depth_mm",
       "label": "Bill depth (mm)",
@@ -97,6 +109,7 @@
       "description": "Depth of the penguin's bill in millimeters"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "flipper_length_mm",
       "label": "Flipper length (mm)",
@@ -105,6 +118,7 @@
       "description": "Length of the penguin's flipper in millimeters"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "body_mass_g",
       "label": "Body mass (g)",
@@ -113,6 +127,7 @@
       "description": "Body mass of the penguin in grams"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "sex",
       "label": "Sex",
@@ -121,6 +136,7 @@
       "description": "Sex of the penguin (male or female)"
     },
     {
+      "table": "penguins",
       "version": "2025-08-20T13-52-15",
       "column_name": "year",
       "label": "Year",

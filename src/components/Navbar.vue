@@ -65,10 +65,12 @@ const logoSrc = import.meta.env.BASE_URL + 'images/vite.svg'
 // Navigation items
 const navItems = [
   { label: 'About', to: '/about', icon: 'mdi-information' },
-  { label: 'Classes', to: '/classes', icon: 'mdi-chart-bar' },
-  { label: 'Variables', to: '/variables', icon: 'mdi-exclamation' },
-  { label: 'Pipe', to: '/pipe', icon: 'mdi-label' },
-
+  { label: 'Overview', to: '/overview', icon: 'mdi-view-dashboard' },
+  { label: 'Pipe', to: '/pipe', icon: 'mdi-pipe' },
+  { label: 'Validation', to: '/validation', icon: 'mdi-check' },
+  { label: 'Variables', to: '/variables', icon: 'mdi-database' },
+  { label: 'Classes', to: '/classes', icon: 'mdi-shape' },
+  { label: 'Labels', to: '/labels', icon: 'mdi-tag-multiple' },
 ]
 </script>
 
