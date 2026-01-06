@@ -1,6 +1,6 @@
 <template>
   <div class="heatmap-container">
-    <h4>Column Types Overview</h4>
+    <h4>Columns</h4>
     <div ref="chart" class="chart"></div>
 
     <!-- Legend -->
@@ -18,10 +18,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 
 const chart = ref(null);
+let chartInstance = null;
+let observer = null;
 
 const plotData = [
   { version: "v1", column_name: "age", type: "numerical" },
@@ -35,7 +37,7 @@ const plotData = [
 
 const typeColors = {
   factor: "#1f77b4",
-  numerical: "#2ca02c",
+  numerical: "#31572c",
   NA: "#d62728"
 };
 
@@ -47,7 +49,7 @@ const truncateText = (text, maxChars) => {
 };
 
 onMounted(() => {
-  const myChart = echarts.init(chart.value);
+  chartInstance = echarts.init(chart.value);
 
   const versions = [...new Set(plotData.map(d => d.version))];
   const columns = [...new Set(plotData.map(d => d.column_name))];
@@ -67,7 +69,7 @@ onMounted(() => {
       seriesData.push({
         value: [x, y, 1], // numeric value required
         itemStyle: { color: typeColors[type] },
-        labelText: type
+        labelText: type // store type for labels
       });
     });
   });
@@ -134,8 +136,18 @@ onMounted(() => {
     }
   };
 
-  myChart.setOption(option);
-  window.addEventListener("resize", () => myChart.resize());
+  chartInstance.setOption(option);
+
+  // ResizeObserver for sidebar toggle or container resize
+  observer = new ResizeObserver(() => {
+    chartInstance?.resize();
+  });
+  observer.observe(chart.value);
+});
+
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  chartInstance?.dispose();
 });
 </script>
 

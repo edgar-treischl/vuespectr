@@ -5,31 +5,29 @@
         <SidebarLayout>
           <!-- Header slot -->
           <template #header>
-            <h2>🎯 Variables</h2>
+            <h2>🎯 Classes</h2>
           </template>
 
           <!-- Sidebar slot -->
           <template #sidebar>
             <div class="sidebar-content">
               <p>
-                Which variables are included in the data? This view helps compare column presence across different dataset versions.
+                This panel shows the distribution of classes (levels) across dataset versions.
               </p>
 
               <ul>
-                <li>Each row represents a dataset version.</li>
-                <li>Each column represents a variable.</li>
-                <li>Green cells indicate presence; red indicate absence.</li>
-
+                <li>Each section represents one categorical variable.</li>
+                <li>You can track if levels have changed, disappeared, or appeared.</li>
               </ul>
 
               <p class="muted mt-3">
-                Use the plot to detect schema drift or inconsistencies over time.
+                Look for unexpected class changes and inconsistent encoding.
               </p>
             </div>
           </template>
 
           <!-- Main content -->
-          <PlotVariables />
+          <PlotClasses />
         </SidebarLayout>
       </v-col>
     </v-row>
@@ -38,7 +36,8 @@
 
 <script setup>
 import SidebarLayout from "../components/SidebarLayout.vue";
-import PlotVariables from "@/components/PlotVariables.vue"
+import PlotClasses from "@/components/PlotClasses.vue"
+
 </script>
 
 <style scoped>
