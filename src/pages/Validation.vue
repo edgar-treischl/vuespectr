@@ -82,37 +82,52 @@ async function loadReport() {
   html.value = null;
   error.value = null;
 
+  if (!store.table || !store.version) {
+    error.value = "Please select a table and version.";
+    loaded.value = true;
+    return;
+  }
+
   try {
+    // Load pointers.json
     const pointerRes = await fetch("data/pointers.json");
     if (!pointerRes.ok) throw new Error("pointers.json not found");
 
     const pointerJson = await pointerRes.json();
 
-    // Filter pointers for current table + version
+    // Find pointer for current table/version
     const selection = pointerJson.pointers.find(
-      (p) => p.table === store.table && p.version === store.version
+      (p) =>
+        p.table === store.table &&
+        p.version === store.version &&
+        p.report_path // ensures report_path exists
     );
 
     if (!selection || !selection.report_path) {
-      throw new Error("No validation report found for this selection.");
+      throw new Error("No validation report found for the selected table and version.");
     }
 
+    // Fetch the HTML report
     const reportRes = await fetch(selection.report_path);
     if (!reportRes.ok) {
       throw new Error(`Report file not found: ${selection.report_path}`);
     }
 
-    html.value = await reportRes.text();
+    const reportText = await reportRes.text();
 
-    // Wait for DOM update, then trigger lazy images (if any)
+    if (!reportText.trim()) {
+      throw new Error(`Report file is empty: ${selection.report_path}`);
+    }
+
+    html.value = reportText;
+
+    // Trigger lazy images if any
     await nextTick();
-    const imgs = document.querySelectorAll("img[data-src]");
-    imgs.forEach((img) => {
+    document.querySelectorAll("img[data-src]").forEach((img) => {
       img.src = img.dataset.src;
     });
   } catch (e) {
-    console.error(e);
-    error.value = e.message;
+    error.value = e.message || "Failed to load report.";
   } finally {
     loaded.value = true;
   }
@@ -127,9 +142,7 @@ onMounted(() => {
 watch(
   () => [store.table, store.version],
   () => {
-    if (store.table && store.version) {
-      loadReport();
-    }
+    if (store.table && store.version) loadReport();
   }
 );
 
