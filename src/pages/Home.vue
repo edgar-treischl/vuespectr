@@ -1,62 +1,56 @@
 <template>
-  <v-container class="fill-height">
-    <v-row justify="center" align="center">
-      <v-col cols="12" md="6">
-        <v-card class="pa-6">
-          <h2 class="mb-4">Welcome</h2>
+  <v-container fluid>
+    <v-row>
+      <!-- Left column: dropdowns -->
+      <v-col cols="12" md="4" class="pa-4">
+        <h4>InSpectr</h4>
+        <p>Pick a table and version:</p>
 
-          <p class="mb-6">
-            Select a table and version to explore the data visualizations.
-          </p>
+        <v-select
+          v-model="store.table"
+          :items="tableOptions"
+          label="Table"
+          dense
+          outlined
+          class="mb-4"
+        ></v-select>
 
-          <v-select
-            v-model="table"
-            :items="tables"
-            label="Table"
-            class="mb-4"
-          />
-
-          <v-select
-            v-model="version"
-            :items="versions"
-            label="Version"
-            class="mb-6"
-          />
-
-          <v-btn
-            color="primary"
-            block
-            :disabled="!table || !version"
-            @click="continueToApp"
-          >
-            Continue
-          </v-btn>
-        </v-card>
+        <v-select
+          v-model="store.version"
+          :items="versionOptions"
+          label="Version"
+          dense
+          outlined
+        ></v-select>
       </v-col>
-      <PointerOverviewTable />
+
+      <!-- Right column: table component -->
+      <v-col cols="12" md="8" class="pa-4">
+        <PointerOverviewTable />
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import PointerOverviewTable from '../components/PointerOverviewTable.vue'
 
-
-const router = useRouter()
+// Pinia store
 const store = useAppStore()
 
-const table = ref(null)
-const version = ref(null)
+// Dropdown options
+const tableOptions = ['TestTable', 'Users', 'Orders', 'Products']
+const versionOptions = ['v1', 'v2', 'v3']
 
-// Example values (later can be dynamic)
-const tables = ['Sales', 'Finance', 'Operations']
-const versions = ['v1', 'v2', 'v3']
-
-function continueToApp() {
-  store.setSelection(table.value, version.value)
-  router.push('/dashboard')
-}
+// Defaults
+if (!store.table) store.table = tableOptions[0]
+if (!store.version) store.version = versionOptions[0]
 </script>
+
+<style scoped>
+/* Optional minimal styling */
+h4 {
+  margin-bottom: 1rem;
+}
+</style>
