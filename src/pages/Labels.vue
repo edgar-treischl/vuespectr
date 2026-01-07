@@ -5,7 +5,7 @@
         <SidebarLayout>
           <!-- Header slot -->
           <template #header>
-            <h2>🎯 Labels</h2>
+            <h2>🏷️ Labels</h2>
           </template>
 
           <!-- Sidebar slot -->

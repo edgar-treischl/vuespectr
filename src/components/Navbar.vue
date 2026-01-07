@@ -60,7 +60,7 @@ const drawer = ref(false)
 const { smAndDown, mdAndUp } = useDisplay()
 
 // Logo path
-const logoSrc = import.meta.env.BASE_URL + 'images/vite.svg'
+const logoSrc = import.meta.env.BASE_URL + 'images/logo.png'
 
 // Navigation items
 const navItems = [
