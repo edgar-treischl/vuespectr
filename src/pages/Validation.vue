@@ -1,7 +1,7 @@
 <template>
-  <v-container class="min-vh-100 pa-4">
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
+  <v-container fluid class="min-vh-100 pa-4">
+    <v-row>
+      <v-col cols="12">
         <SidebarLayout>
           <!-- Header slot -->
           <template #header>
@@ -44,22 +44,24 @@
           </template>
 
           <!-- Main content -->
-          <div v-if="!loaded" class="d-flex justify-center align-center loading-state">
-            <v-progress-circular indeterminate color="primary" />
-            <span class="ml-2">Loading validation report…</span>
-          </div>
+          <div class="main-content-body">
+            <div v-if="!loaded" class="d-flex justify-center align-center loading-state">
+              <v-progress-circular indeterminate color="primary" />
+              <span class="ml-2">Loading validation report…</span>
+            </div>
 
-          <div v-else-if="error" class="error">
-            <v-icon color="error" size="36">mdi-alert-circle</v-icon>
-            <h5 class="mt-2">Report Not Available</h5>
-            <p>
-              Table: <strong>{{ store.table }}</strong><br />
-              Version: <strong>{{ store.version }}</strong><br />
-              {{ error }}
-            </p>
-          </div>
+            <div v-else-if="error" class="error">
+              <v-icon color="error" size="36">mdi-alert-circle</v-icon>
+              <h5 class="mt-2">Report Not Available</h5>
+              <p>
+                Table: <strong>{{ store.table }}</strong><br />
+                Version: <strong>{{ store.version }}</strong><br />
+                {{ error }}
+              </p>
+            </div>
 
-          <div v-else v-html="html" />
+            <div v-else v-html="html" class="report-html" />
+          </div>
         </SidebarLayout>
       </v-col>
     </v-row>
@@ -72,7 +74,6 @@ import { useAppStore } from "@/stores/app";
 import SidebarLayout from "../components/SidebarLayout.vue";
 
 const store = useAppStore();
-
 const html = ref(null);
 const error = ref(null);
 const loaded = ref(false);
@@ -89,39 +90,28 @@ async function loadReport() {
   }
 
   try {
-    // Load pointers.json
     const pointerRes = await fetch("data/pointers.json");
     if (!pointerRes.ok) throw new Error("pointers.json not found");
 
     const pointerJson = await pointerRes.json();
-
-    // Find pointer for current table/version
     const selection = pointerJson.pointers.find(
-      (p) =>
-        p.table === store.table &&
-        p.version === store.version &&
-        p.report_path // ensures report_path exists
+      (p) => p.table === store.table && p.version === store.version && p.report_path
     );
 
     if (!selection || !selection.report_path) {
       throw new Error("No validation report found for the selected table and version.");
     }
 
-    // Fetch the HTML report
     const reportRes = await fetch(selection.report_path);
-    if (!reportRes.ok) {
-      throw new Error(`Report file not found: ${selection.report_path}`);
-    }
+    if (!reportRes.ok) throw new Error(`Report file not found: ${selection.report_path}`);
 
     const reportText = await reportRes.text();
-
     if (!reportText.trim()) {
       throw new Error(`Report file is empty: ${selection.report_path}`);
     }
 
     html.value = reportText;
 
-    // Trigger lazy images if any
     await nextTick();
     document.querySelectorAll("img[data-src]").forEach((img) => {
       img.src = img.dataset.src;
@@ -133,12 +123,8 @@ async function loadReport() {
   }
 }
 
-// Load report on mount
-onMounted(() => {
-  loadReport();
-});
+onMounted(() => loadReport());
 
-// Reload report if table/version changes
 watch(
   () => [store.table, store.version],
   () => {
@@ -194,6 +180,27 @@ function downloadReport() {
   margin-top: 1rem;
 }
 
+/* Main content area styling */
+.main-content-body {
+  flex: 1;
+  width: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.report-html {
+  flex: 1;
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Loading and error states */
+.loading-state {
+  gap: 0.5rem;
+  color: #555;
+}
+
 .error {
   display: flex;
   flex-direction: column;
@@ -204,11 +211,5 @@ function downloadReport() {
   color: #842029;
   padding: 1rem;
   border-radius: 6px;
-}
-
-.loading-state {
-  min-height: 400px;
-  gap: 0.5rem;
-  color: #555;
 }
 </style>

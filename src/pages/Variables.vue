@@ -1,39 +1,38 @@
 <template>
-  <v-container class="min-vh-100 pa-4">
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
-        <SidebarLayout>
-          <!-- Header slot -->
-          <template #header>
-            <h2>🎯 Variables</h2>
-          </template>
+  <v-container fluid class="min-vh-100 pa-4">
+  <v-row class="fill-height" justify="center">
+    <v-col cols="12" class="d-flex">
+      <SidebarLayout>
+        <!-- Header -->
+        <template #header>
+          <h2>🎯 Variables</h2>
+        </template>
 
-          <!-- Sidebar slot -->
-          <template #sidebar>
-            <div class="sidebar-content">
-              <p>
-                Which variables are included in the data? This view helps compare column presence across different dataset versions.
-              </p>
+        <!-- Sidebar -->
+        <template #sidebar>
+          <div class="sidebar-content">
+            <p>
+              Which variables are included in the data? This view helps compare column presence across different dataset versions.
+            </p>
 
-              <ul>
-                <li>Each row represents a dataset version.</li>
-                <li>Each column represents a variable.</li>
-                <li>Green cells indicate presence; red indicate absence.</li>
+            <ul>
+              <li>Each row represents a dataset version.</li>
+              <li>Each column represents a variable.</li>
+              <li>Green cells indicate presence; red indicate absence.</li>
+            </ul>
 
-              </ul>
+            <p class="muted mt-3">
+              Use the plot to detect schema drift or inconsistencies over time.
+            </p>
+          </div>
+        </template>
 
-              <p class="muted mt-3">
-                Use the plot to detect schema drift or inconsistencies over time.
-              </p>
-            </div>
-          </template>
-
-          <!-- Main content -->
-          <PlotVariables />
-        </SidebarLayout>
-      </v-col>
-    </v-row>
-  </v-container>
+        <!-- Main -->
+        <PlotVariables />
+      </SidebarLayout>
+    </v-col>
+  </v-row>
+</v-container>
 </template>
 
 <script setup>

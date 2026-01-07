@@ -1,6 +1,10 @@
 <template>
   <div class="heatmap-container">
-    <div ref="chart" class="chart"></div>
+    <!-- Chart -->
+    <div class="chart-wrapper">
+      <div ref="chart" class="chart"></div>
+    </div>
+
     <!-- Legend -->
     <div class="legend">
       <div class="legend-item">
@@ -51,7 +55,7 @@ onMounted(async () => {
     versions.forEach((ver, x) => {
       const present = presenceSet.has(`${ver}||${col}`);
       data.push({
-        value: [x, y, present ? 1 : 0], // numeric value
+        value: [x, y, present ? 1 : 0],
         color: present ? "#31572c" : "#d00000",
       });
     });
@@ -66,31 +70,31 @@ onMounted(async () => {
   // 6️⃣ ECharts option
   const option = {
     tooltip: {
-      formatter: params => {
+      formatter: (params) => {
         const col = columns[params.data.value[1]];
         const ver = versions[params.data.value[0]];
-        return `<b>${col}</b><br>${ver}<br>${params.data.labelText}`;
-      }
+        return `<b>${col}</b><br>${ver}<br>${params.data.labelText || ""}`;
+      },
     },
     xAxis: {
       type: "category",
       data: versions,
       axisLabel: { rotate: 0, fontSize: 14, color: "#333" },
-      axisLine: { lineStyle: { color: "#888" } }
+      axisLine: { lineStyle: { color: "#888" } },
     },
     yAxis: {
       type: "category",
       data: columns,
       inverse: true,
       axisLabel: { fontSize: 14, color: "#333" },
-      axisLine: { lineStyle: { color: "#888" } }
+      axisLine: { lineStyle: { color: "#888" } },
     },
     grid: {
-      left: "10%",
-      right: "10%",
-      top: "5%",
-      bottom: "10%",
-      containLabel: true
+      left: 100,
+      right: 40,
+      top: 40,
+      bottom: 80,
+      containLabel: true,
     },
     series: [
       {
@@ -98,35 +102,35 @@ onMounted(async () => {
         data,
         label: {
           show: true,
-          formatter: params => truncateText(params.data.labelText, 10),
+          formatter: (params) => truncateText(params.data.labelText, 10),
           color: "#fff",
           fontSize: tileFontSize,
           fontWeight: 600,
           align: "center",
-          verticalAlign: "middle"
+          verticalAlign: "middle",
         },
         itemStyle: {
           borderColor: "#fff",
           borderWidth: 1,
-          borderRadius: 4
-        }
-      }
+          borderRadius: 4,
+        },
+      },
     ],
     visualMap: {
       show: false,
       min: 0,
       max: 1,
-      inRange: { color: ["#d00000", "#31572c"] }
-    }
+      inRange: { color: ["#d00000", "#31572c"] },
+    },
   };
 
   chartInstance.setOption(option);
 
-  // 7️⃣ ResizeObserver for parent width changes (sidebar toggle safe)
+  // 7️⃣ ResizeObserver for parent width/height changes
   observer = new ResizeObserver(() => {
     chartInstance?.resize();
   });
-  observer.observe(chart.value);
+  observer.observe(chart.value.parentElement);
 });
 
 onBeforeUnmount(() => {
@@ -139,21 +143,30 @@ onBeforeUnmount(() => {
 .heatmap-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center;  /* center the chart horizontally */
   width: 100%;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Chart wrapper with aspect ratio */
+.chart-wrapper {
+  width: 100%;
+  max-width: 1200px;        /* maximum chart width */
+  position: relative;
+  padding-bottom: 60%;       /* aspect ratio: height / width ~ 0.6 */
 }
 
 .chart {
-  width: 95%;
-  height: 500px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
 }
 
-h4 {
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: #444;
-}
-
+/* Legend */
 .legend {
   margin-top: 10px;
   display: flex;
