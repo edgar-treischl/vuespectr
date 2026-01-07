@@ -9,6 +9,7 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue"
 import { Scatter } from "vue-chartjs"
 import {
   Chart as ChartJS,
@@ -20,6 +21,8 @@ import {
   Legend
 } from "chart.js"
 
+/* ---------------- Chart.js registration ---------------- */
+
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -29,60 +32,96 @@ ChartJS.register(
   Legend
 )
 
-// Dummy data
-const rawData = [
-  { col: "customer…", test: "not_null", count: 1 },
-  { col: "customer…", test: "unique", count: 1 },
-  { col: "customer…", test: "range", count: 0 },
+/* ---------------- Table filter (hard-coded for now) ---------------- */
 
-  { col: "order_id", test: "not_null", count: 1 },
-  { col: "order_id", test: "unique", count: 1 },
-  { col: "order_id", test: "range", count: 1 },
+const tableFilter = ref("penguins")
 
-  { col: "amount", test: "not_null", count: 1 },
-  { col: "amount", test: "unique", count: 0 },
-  { col: "amount", test: "range", count: 1 }
-]
+/* ---------------- Load pipes.json ---------------- */
 
-const tests = ["not_null", "unique", "range"]
-const cols = ["customer…", "order_id", "amount"]
+const pipes = ref([])
 
-// Color scale similar to ggplot gradient
+onMounted(async () => {
+  const res = await fetch("data/pipes.json")
+  const json = await res.json()
+  pipes.value = json.pipes
+})
+
+/* ---------------- Filtered pipes ---------------- */
+
+const filteredPipes = computed(() =>
+  pipes.value.filter(p => p.table === tableFilter.value)
+)
+
+/* ---------------- Matrix axes ---------------- */
+
+const cols = computed(() =>
+  [...new Set(filteredPipes.value.map(p => p.columns))]
+)
+
+const tests = computed(() =>
+  [...new Set(filteredPipes.value.map(p => p.validation_type))]
+)
+
+/* ---------------- Normalize to matrix ---------------- */
+
+const rawData = computed(() =>
+  cols.value.flatMap(col =>
+    tests.value.map(test => ({
+      col,
+      test,
+      count: filteredPipes.value.some(
+        p => p.columns === col && p.validation_type === test
+      )
+        ? 1
+        : 0
+    }))
+  )
+)
+
+/* ---------------- Color scale ---------------- */
+
 function colorForCount(count) {
   return count === 1 ? "#31572c" : "#ffffff"
 }
 
-// Build datasets (one line per column)
-const datasets = cols.map(col => {
-  const points = rawData
-    .filter(d => d.col === col)
-    .map(d => ({
-      x: d.test,
-      y: d.col
-    }))
+/* ---------------- Build datasets ---------------- */
 
-  return {
-    label: col,
-    data: points,
-    showLine: true,
-    borderColor: "lightgray",
-    borderWidth: 1,
-    pointRadius: 6,
-    pointBackgroundColor: ctx => {
-      const test = ctx.raw.x
-      const match = rawData.find(
-        d => d.col === col && d.test === test
-      )
-      return colorForCount(match?.count ?? 0)
+const datasets = computed(() =>
+  cols.value.map(col => {
+    const points = rawData.value
+      .filter(d => d.col === col)
+      .map(d => ({
+        x: d.test,
+        y: d.col
+      }))
+
+    return {
+      label: col,
+      data: points,
+      showLine: true,
+      borderColor: "lightgray",
+      borderWidth: 1,
+      pointRadius: 6,
+      pointBackgroundColor: ctx => {
+        const test = ctx.raw.x
+        const match = rawData.value.find(
+          d => d.col === col && d.test === test
+        )
+        return colorForCount(match?.count ?? 0)
+      }
     }
-  }
-})
+  })
+)
 
-const chartData = {
-  datasets
-}
+/* ---------------- Chart data ---------------- */
 
-const options = {
+const chartData = computed(() => ({
+  datasets: datasets.value
+}))
+
+/* ---------------- Chart options ---------------- */
+
+const options = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -91,7 +130,7 @@ const options = {
   scales: {
     x: {
       type: "category",
-      labels: tests,
+      labels: tests.value,
       title: {
         display: true,
         text: "Test"
@@ -103,12 +142,12 @@ const options = {
     },
     y: {
       type: "category",
-      labels: cols,
+      labels: cols.value,
       title: {
         display: true,
         text: "Column"
       }
     }
   }
-}
+}))
 </script>

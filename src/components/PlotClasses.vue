@@ -10,7 +10,10 @@
         :key="type"
         class="legend-item"
       >
-        <div class="legend-color-box" :style="{ backgroundColor: color }"></div>
+        <div
+          class="legend-color-box"
+          :style="{ backgroundColor: color }"
+        ></div>
         <span class="legend-label">{{ type }}</span>
       </div>
     </div>
@@ -18,74 +21,118 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
-import * as echarts from "echarts";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue"
+import * as echarts from "echarts"
 
-const chart = ref(null);
-let chartInstance = null;
-let observer = null;
+/* ---------------- Refs & instances ---------------- */
 
-const plotData = [
-  { version: "v1", column_name: "age", type: "numerical" },
-  { version: "v1", column_name: "sex", type: "factor" },
-  { version: "v1", column_name: "income", type: "numerical" },
-  { version: "v2", column_name: "age", type: "numerical" },
-  { version: "v2", column_name: "sex", type: "factor" },
-  { version: "v2", column_name: "income", type: "numerical" },
-  { version: "v3", column_name: "age", type: "numerical" }
-];
+const chart = ref(null)
+let chartInstance = null
+let observer = null
+
+/* ---------------- Table filter (hard-coded for now) ---------------- */
+
+const tableFilter = ref("penguins")
+
+/* ---------------- Load columns.json ---------------- */
+
+const columnsData = ref([])
+
+onMounted(async () => {
+  const res = await fetch("data/columns.json")
+  const json = await res.json()
+  columnsData.value = json.columns
+  initChart()
+})
+
+/* ---------------- Filtered columns ---------------- */
+
+const filteredColumns = computed(() =>
+  columnsData.value.filter(c => c.table === tableFilter.value)
+)
+
+/* ---------------- Color mapping ---------------- */
 
 const typeColors = {
   factor: "#1f77b4",
-  numerical: "#31572c",
+  numeric: "#31572c",
+  integer: "#31572c",
   NA: "#d62728"
-};
+}
 
-// Dynamically truncate text for tile labels
+/* ---------------- Helpers ---------------- */
+
 const truncateText = (text, maxChars) => {
-  if (!text) return "";
-  if (text.length <= maxChars) return text;
-  return text.slice(0, maxChars - 3) + "...";
-};
+  if (!text) return ""
+  return text.length <= maxChars
+    ? text
+    : text.slice(0, maxChars - 3) + "..."
+}
 
-onMounted(() => {
-  chartInstance = echarts.init(chart.value);
+/* ---------------- Chart init ---------------- */
 
-  const versions = [...new Set(plotData.map(d => d.version))];
-  const columns = [...new Set(plotData.map(d => d.column_name))];
+function initChart() {
+  if (!chart.value) return
 
-  // Determine font size dynamically based on number of columns
+  chartInstance = echarts.init(chart.value)
+
+  const versions = [
+    ...new Set(filteredColumns.value.map(d => d.version))
+  ]
+
+  const columns = [
+    ...new Set(filteredColumns.value.map(d => d.column_name))
+  ]
+
+  // Dynamic font size
   const tileFontSize = Math.max(
     12,
     Math.min(18, 300 / Math.max(columns.length, versions.length))
-  );
+  )
 
-  // Build series data
-  const seriesData = [];
+  /* -------- Build heatmap matrix -------- */
+
+  const seriesData = []
+
   columns.forEach((col, y) => {
     versions.forEach((ver, x) => {
-      const item = plotData.find(d => d.version === ver && d.column_name === col);
-      const type = item?.type || "NA";
+      const item = filteredColumns.value.find(
+        d => d.version === ver && d.column_name === col
+      )
+
+      const type = item?.type || "NA"
+
       seriesData.push({
-        value: [x, y, 1], // numeric value required
+        value: [x, y, 1],
         itemStyle: { color: typeColors[type] },
-        labelText: type // store type for labels
-      });
-    });
-  });
+        labelText: type,
+        description: item?.description ?? "",
+        label: item?.label ?? col
+      })
+    })
+  })
+
+  /* ---------------- Chart option ---------------- */
 
   const option = {
     tooltip: {
       formatter: params => {
-        const col = columns[params.data.value[1]];
-        const ver = versions[params.data.value[0]];
-        return `<b>${col}</b><br>${ver}<br>Type: ${params.data.labelText}`;
+        const col = columns[params.data.value[1]]
+        const ver = versions[params.data.value[0]]
+
+        return `
+          <b>${params.data.label}</b><br/>
+          Column: ${col}<br/>
+          Version: ${ver}<br/>
+          Type: ${params.data.labelText}<br/>
+          ${params.data.description || ""}
+        `
       }
     },
     xAxis: {
       type: "category",
       data: versions,
-      axisLabel: { rotate: 30, fontSize: 14, color: "#333" },
+      axisLabel: { rotate: 30, fontSize: 14, color: "#333", formatter: value => value.slice(0, 10) },
       axisLine: { lineStyle: { color: "#888" } }
     },
     yAxis: {
@@ -107,13 +154,7 @@ onMounted(() => {
         type: "heatmap",
         data: seriesData,
         label: {
-          show: true,
-          formatter: params => truncateText(params.data.labelText, 12),
-          color: "#fff",
-          fontSize: tileFontSize,
-          fontWeight: 600,
-          align: "center",
-          verticalAlign: "middle"
+          show: false
         },
         emphasis: {
           itemStyle: {
@@ -134,21 +175,24 @@ onMounted(() => {
       max: 1,
       inRange: { color: ["#ffffff", "#ffffff"] }
     }
-  };
+  }
 
-  chartInstance.setOption(option);
+  chartInstance.setOption(option)
 
-  // ResizeObserver for sidebar toggle or container resize
+  /* -------- Resize observer -------- */
+
   observer = new ResizeObserver(() => {
-    chartInstance?.resize();
-  });
-  observer.observe(chart.value);
-});
+    chartInstance?.resize()
+  })
+  observer.observe(chart.value)
+}
+
+/* ---------------- Cleanup ---------------- */
 
 onBeforeUnmount(() => {
-  observer?.disconnect();
-  chartInstance?.dispose();
-});
+  observer?.disconnect()
+  chartInstance?.dispose()
+})
 </script>
 
 <style scoped>
