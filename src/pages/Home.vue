@@ -26,7 +26,7 @@
 
       <!-- Right column: filtered table -->
       <v-col cols="12" md="8" class="pa-4">
-        <PointerOverviewTable
+        <TableOverview
           :selectedTable="store.table"
           :selectedVersion="store.version"
         />
@@ -38,7 +38,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useAppStore } from "@/stores/app";
-import PointerOverviewTable from "../components/PointerOverviewTable.vue";
+import TableOverview from "../components/TableOverview.vue";
 
 const store = useAppStore();
 

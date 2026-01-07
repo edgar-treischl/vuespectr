@@ -1,7 +1,5 @@
 <template>
   <v-card>
-    <v-card-title>Pipe Validation Matrix</v-card-title>
-
     <v-card-text style="height: 450px">
       <Scatter :data="chartData" :options="options" />
     </v-card-text>

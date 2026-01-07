@@ -2,13 +2,13 @@
   <v-container class="fill-height">
     <v-row justify="center" align="center">
       <v-col cols="12" md="8">
-        <PenguinsMetaTable />
+        <TableMetadata />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup>
-import PenguinsMetaTable from '../components/PenguinsMetaTable.vue';
+import TableMetadata from '../components/TableMetadata.vue';
 
 </script>

@@ -1,8 +1,6 @@
 <template>
   <div class="heatmap-container">
-    <h4>Column Presence Overview</h4>
     <div ref="chart" class="chart"></div>
-
     <!-- Legend -->
     <div class="legend">
       <div class="legend-item">
@@ -35,16 +33,16 @@ onMounted(async () => {
   chartInstance = echarts.init(chart.value);
 
   // 1️⃣ Fetch JSON
-  const response = await fetch("data/meta.json");
+  const response = await fetch("data/columns.json");
   const meta = await response.json();
 
   // 2️⃣ Extract unique versions & columns
-  const versions = [...new Set(meta.penguins.map(p => p.version))];
-  const columns = [...new Set(meta.penguins.map(p => p.column_name))];
+  const versions = [...new Set(meta.columns.map(p => p.version))];
+  const columns = [...new Set(meta.columns.map(p => p.column_name))];
 
   // 3️⃣ Build presence set
   const presenceSet = new Set(
-    meta.penguins.map(p => `${p.version}||${p.column_name}`)
+    meta.columns.map(p => `${p.version}||${p.column_name}`)
   );
 
   // 4️⃣ Build heatmap data
@@ -90,7 +88,7 @@ onMounted(async () => {
     grid: {
       left: "10%",
       right: "10%",
-      top: "10%",
+      top: "5%",
       bottom: "10%",
       containLabel: true
     },

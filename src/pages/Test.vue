@@ -84,7 +84,7 @@
           </v-col>
         </v-row>
         
-        <PointerOverviewTable />
+        <TableOverview />
       </v-col>
     </v-row>
     
@@ -93,7 +93,7 @@
 
 <script setup>
 import { useAppStore } from '@/stores/app'
-import PointerOverviewTable from '../components/PointerOverviewTable.vue'
+import TableOverview from '../components/TableOverview.vue'
 
 // Pinia store for reactive selection
 const store = useAppStore()

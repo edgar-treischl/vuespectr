@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h4>Labels</h4>
     <div ref="chart" style="height: 600px; width: 100%;"></div>
   </div>
 </template>
@@ -95,7 +94,7 @@ onMounted(async () => {
         inverse: true,
         splitLine: { show: true, lineStyle: { color: "#eee" } },
       },
-      grid: { left: "20%", right: "5%", top: "10%", bottom: "20%" },
+      grid: { left: "10%", right: "10%", top: "5%", bottom: "15%" },
       visualMap: {
         type: "piecewise",
         orient: "horizontal",

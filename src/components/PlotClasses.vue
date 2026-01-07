@@ -1,6 +1,5 @@
 <template>
   <div class="heatmap-container">
-    <h4>Columns</h4>
     <div ref="chart" class="chart"></div>
 
     <!-- Legend -->
@@ -132,7 +131,7 @@ function initChart() {
     xAxis: {
       type: "category",
       data: versions,
-      axisLabel: { rotate: 30, fontSize: 14, color: "#333", formatter: value => value.slice(0, 10) },
+      axisLabel: { rotate: 0, fontSize: 14, color: "#333", formatter: value => value.slice(0, 10) },
       axisLine: { lineStyle: { color: "#888" } }
     },
     yAxis: {
@@ -143,10 +142,10 @@ function initChart() {
       axisLine: { lineStyle: { color: "#888" } }
     },
     grid: {
-      left: "15%",
-      right: "5%",
-      top: "15%",
-      bottom: "15%",
+      left: "10%",
+      right: "10%",
+      top: "5%",
+      bottom: "10%",
       containLabel: true
     },
     series: [
