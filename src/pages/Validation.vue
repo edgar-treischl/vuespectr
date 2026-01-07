@@ -5,7 +5,7 @@
         <SidebarLayout>
           <!-- Header slot -->
           <template #header>
-            <h4>🧯 Validation Report</h4>
+            <h2>🧯 Validation Report</h2>
           </template>
 
           <!-- Sidebar slot -->

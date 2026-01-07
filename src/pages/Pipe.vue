@@ -5,7 +5,7 @@
         <SidebarLayout>
           <!-- Header slot -->
           <template #header>
-            <h3>🔧 Pipeline Overview</h3>
+            <h2>🔧 Pipeline Overview</h2>
           </template>
 
           <!-- Sidebar slot -->

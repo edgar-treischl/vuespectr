@@ -132,7 +132,7 @@
       "column_name": "sex",
       "label": "Sex",
       "type": "factor",
-      "levels": "female, male",
+      "levels": "f, m",
       "description": "Sex of the penguin (male or female)"
     },
     {

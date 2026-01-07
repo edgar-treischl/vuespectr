@@ -1,15 +1,17 @@
 <template>
   <div>
-    <h4>Label Matrix (All penguins versions)</h4>
+    <h4>Labels</h4>
     <div ref="chart" style="height: 600px; width: 100%;"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 
 const chart = ref(null);
+let chartInstance = null;
+let observer = null;
 
 // Smart truncate: split long text into lines of max n chars
 const truncateText = (text, n) => {
@@ -21,7 +23,7 @@ const truncateText = (text, n) => {
     remaining = remaining.slice(n);
   }
   if (remaining.length) parts.push(remaining);
-  return parts.join("\n"); // line breaks inside tile
+  return parts.join("\n");
 };
 
 onMounted(async () => {
@@ -30,17 +32,26 @@ onMounted(async () => {
     if (!res.ok) throw new Error("columns.json not found");
     const json = await res.json();
 
-    const allColumns = json.columns.filter(c => c.table === "penguins" && c.type === "factor");
+    const allColumns = json.columns.filter(
+      c => c.table === "penguins" && c.type === "factor"
+    );
     if (!allColumns.length) throw new Error("No factor columns found");
 
-    const versions = Array.from(new Set(allColumns.map(c => c.version))).sort();
-    const columns = Array.from(new Set(allColumns.map(c => c.column_name))).sort();
+    const versions = Array.from(
+      new Set(allColumns.map(c => c.version))
+    ).sort();
+
+    const columns = Array.from(
+      new Set(allColumns.map(c => c.column_name))
+    ).sort();
 
     const signatureMap = {};
     columns.forEach(col => {
       signatureMap[col] = {};
       versions.forEach(ver => {
-        const colData = allColumns.find(c => c.column_name === col && c.version === ver);
+        const colData = allColumns.find(
+          c => c.column_name === col && c.version === ver
+        );
         signatureMap[col][ver] = colData?.levels
           ? colData.levels.split(/\s*,\s*/).sort().join(", ")
           : "";
@@ -86,11 +97,21 @@ onMounted(async () => {
       },
       grid: { left: "20%", right: "5%", top: "10%", bottom: "20%" },
       visualMap: {
-        min: 0,
-        max: 1,
-        show: false,
-        inRange: { color: ["#31572c", "#d00000"] },
-      },
+        type: "piecewise",
+        orient: "horizontal",
+        left: "center",
+        bottom: 10,
+        show: true,
+          pieces: [
+            { value: 0, label: "Unchanged", color: "#31572c" },
+            { value: 1, label: "Changed", color: "#d00000" }
+          ],
+  textStyle: {
+    color: "#333",
+    fontSize: 12
+  }
+},
+
       series: [
         {
           type: "heatmap",
@@ -98,13 +119,13 @@ onMounted(async () => {
           label: {
             show: true,
             color: "#fff",
-            fontSize: 14, // increased font
+            fontSize: 14,
+            lineHeight: 16,
             formatter: params => {
               const col = columns[params.data[1]];
               const ver = versions[params.data[0]];
-              return truncateText(signatureMap[col][ver], 18); // truncate per line
+              return truncateText(signatureMap[col][ver], 18);
             },
-            lineHeight: 16, // spacing between lines
           },
           emphasis: {
             itemStyle: {
@@ -121,14 +142,32 @@ onMounted(async () => {
       ],
     };
 
-    const myChart = echarts.init(chart.value);
-    myChart.setOption(option);
+    // Initialize chart
+    chartInstance = echarts.init(chart.value);
+    chartInstance.setOption(option);
+
+    // Resize observer
+    observer = new ResizeObserver(() => {
+      if (chartInstance) {
+        chartInstance.resize();
+      }
+    });
+    observer.observe(chart.value);
+
   } catch (e) {
     console.error(e);
-    chart.value.innerHTML = `<p style="color:red;">${e.message}</p>`;
+    if (chart.value) {
+      chart.value.innerHTML = `<p style="color:red;">${e.message}</p>`;
+    }
   }
 });
+
+onBeforeUnmount(() => {
+  if (observer) observer.disconnect();
+  if (chartInstance) chartInstance.dispose();
+});
 </script>
+
 
 <style scoped>
 h4 {
