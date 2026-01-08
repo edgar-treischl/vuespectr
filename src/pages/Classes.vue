@@ -1,23 +1,24 @@
 <template>
-  <v-container class="min-vh-100 pa-4">
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
+  <v-container fluid class="min-vh-100 pa-4">
+    <v-row class="fill-height" justify="center">
+      <v-col cols="10" class="d-flex">
         <SidebarLayout>
-          <!-- Header slot -->
+          <!-- Header -->
           <template #header>
             <h2>🏫 Classes</h2>
           </template>
 
-          <!-- Sidebar slot -->
+          <!-- Sidebar -->
           <template #sidebar>
             <div class="sidebar-content">
               <p>
-                This panel shows the distribution of classes (levels) across dataset versions.
+                This view shows the distribution of classes (levels) across dataset
+                versions.
               </p>
 
               <ul>
                 <li>Each section represents one categorical variable.</li>
-                <li>You can track if levels have changed, disappeared, or appeared.</li>
+                <li>Track whether levels have changed, disappeared, or appeared.</li>
               </ul>
 
               <p class="muted mt-3">
@@ -26,7 +27,7 @@
             </div>
           </template>
 
-          <!-- Main content -->
+          <!-- Main -->
           <PlotClasses />
         </SidebarLayout>
       </v-col>
@@ -36,8 +37,7 @@
 
 <script setup>
 import SidebarLayout from "../components/SidebarLayout.vue";
-import PlotClasses from "@/components/PlotClasses.vue"
-
+import PlotClasses from "@/components/PlotClasses.vue";
 </script>
 
 <style scoped>

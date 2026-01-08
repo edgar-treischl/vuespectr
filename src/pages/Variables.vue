@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="min-vh-100 pa-4">
   <v-row class="fill-height" justify="center">
-    <v-col cols="12" class="d-flex">
+    <v-col cols="10" class="d-flex">
       <SidebarLayout>
         <!-- Header -->
         <template #header>

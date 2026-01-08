@@ -1,23 +1,23 @@
 <template>
-  <v-container class="min-vh-100 pa-4">
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
+  <v-container fluid class="min-vh-100 pa-4">
+    <v-row class="fill-height" justify="center">
+      <v-col cols="10" class="d-flex">
         <SidebarLayout>
-          <!-- Header slot -->
+          <!-- Header -->
           <template #header>
             <h2>🏷️ Labels</h2>
           </template>
 
-          <!-- Sidebar slot -->
+          <!-- Sidebar -->
           <template #sidebar>
             <div class="sidebar-content">
               <p>
-                This panel shows the labels or category identifiers present in the dataset
+                This view shows the labels or category identifiers present in the dataset.
               </p>
 
               <ul>
                 <li>Each label represents a class or group associated with your data.</li>
-                <li>Useful for supervised tasks like classification or evaluation.</li>
+                <li>Useful for supervised tasks such as classification or evaluation.</li>
               </ul>
 
               <p class="muted mt-3">
@@ -26,7 +26,7 @@
             </div>
           </template>
 
-          <!-- Main content -->
+          <!-- Main -->
           <PlotLabels />
         </SidebarLayout>
       </v-col>
@@ -36,9 +36,7 @@
 
 <script setup>
 import SidebarLayout from "../components/SidebarLayout.vue";
-import PlotLabels from '../components/PlotLabels.vue';
-
-
+import PlotLabels from "@/components/PlotLabels.vue";
 </script>
 
 <style scoped>

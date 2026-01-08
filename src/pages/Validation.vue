@@ -1,14 +1,14 @@
 <template>
   <v-container fluid class="min-vh-100 pa-4">
-    <v-row>
-      <v-col cols="12">
+    <v-row class="fill-height" justify="center">
+      <v-col cols="10" class="d-flex">
         <SidebarLayout>
-          <!-- Header slot -->
+          <!-- Header -->
           <template #header>
             <h2>🧯 Validation Report</h2>
           </template>
 
-          <!-- Sidebar slot -->
+          <!-- Sidebar -->
           <template #sidebar>
             <div class="sidebar-content">
               <p>
@@ -43,9 +43,12 @@
             </div>
           </template>
 
-          <!-- Main content -->
+          <!-- Main -->
           <div class="main-content-body">
-            <div v-if="!loaded" class="d-flex justify-center align-center loading-state">
+            <div
+              v-if="!loaded"
+              class="d-flex justify-center align-center loading-state"
+            >
               <v-progress-circular indeterminate color="primary" />
               <span class="ml-2">Loading validation report…</span>
             </div>
@@ -95,19 +98,27 @@ async function loadReport() {
 
     const pointerJson = await pointerRes.json();
     const selection = pointerJson.pointers.find(
-      (p) => p.table === store.table && p.version === store.version && p.report_path
+      (p) =>
+        p.table === store.table &&
+        p.version === store.version &&
+        p.report_path
     );
 
     if (!selection || !selection.report_path) {
-      throw new Error("No validation report found for the selected table and version.");
+      throw new Error(
+        "No validation report found for the selected table and version."
+      );
     }
 
     const reportRes = await fetch(selection.report_path);
-    if (!reportRes.ok) throw new Error(`Report file not found: ${selection.report_path}`);
+    if (!reportRes.ok)
+      throw new Error(`Report file not found: ${selection.report_path}`);
 
     const reportText = await reportRes.text();
     if (!reportText.trim()) {
-      throw new Error(`Report file is empty: ${selection.report_path}`);
+      throw new Error(
+        `Report file is empty: ${selection.report_path}`
+      );
     }
 
     html.value = reportText;
@@ -123,7 +134,7 @@ async function loadReport() {
   }
 }
 
-onMounted(() => loadReport());
+onMounted(loadReport);
 
 watch(
   () => [store.table, store.version],
@@ -180,7 +191,7 @@ function downloadReport() {
   margin-top: 1rem;
 }
 
-/* Main content area styling */
+/* Main content area */
 .main-content-body {
   flex: 1;
   width: 100%;
@@ -195,7 +206,7 @@ function downloadReport() {
   overflow-x: auto;
 }
 
-/* Loading and error states */
+/* Loading & error states */
 .loading-state {
   gap: 0.5rem;
   color: #555;

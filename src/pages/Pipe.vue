@@ -1,33 +1,33 @@
 <template>
-  <v-container class="min-vh-100 pa-4">
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
+  <v-container fluid class="min-vh-100 pa-4">
+    <v-row class="fill-height" justify="center">
+      <v-col cols="10" class="d-flex">
         <SidebarLayout>
-          <!-- Header slot -->
+          <!-- Header -->
           <template #header>
             <h2>🔧 Pipeline Overview</h2>
           </template>
 
-          <!-- Sidebar slot -->
+          <!-- Sidebar -->
           <template #sidebar>
             <div class="sidebar-content">
               <p>
-                What did we validate, and how? The chart illustrates the validation pipeline, showing which 
-                tests were applied to each column.
+                What did we validate, and how? This view illustrates the validation
+                pipeline, showing which tests were applied to each column.
               </p>
 
               <ul>
-                <li>Each point represents a validation step of the validation pipeline.</li>
-                <li>You can see on one page which variables were validated and how.</li>
+                <li>Each point represents a validation step in the pipeline.</li>
+                <li>See at a glance which variables were validated and how.</li>
               </ul>
 
               <p class="muted mt-3">
-                Use it to identify gaps or inconsistencies in validation coverage.
+                Use this plot to identify gaps or inconsistencies in validation coverage.
               </p>
             </div>
           </template>
 
-          <!-- Main content -->
+          <!-- Main -->
           <PlotPipe />
         </SidebarLayout>
       </v-col>
