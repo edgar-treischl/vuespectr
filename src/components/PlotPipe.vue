@@ -1,14 +1,13 @@
 <template>
-  <v-card>
-    <v-card-text style="height: 450px">
-      <Scatter :data="chartData" :options="options" />
-    </v-card-text>
-  </v-card>
+  <PlotWrapper>
+    <Scatter :data="chartData" :options="options" />
+  </PlotWrapper>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
-import { Scatter } from "vue-chartjs"
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { Scatter } from "vue-chartjs";
+import PlotWrapper from "./PlotWrapper.vue";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -17,10 +16,9 @@ import {
   CategoryScale,
   Tooltip,
   Legend
-} from "chart.js"
+} from "chart.js";
 
 /* ---------------- Chart.js registration ---------------- */
-
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -28,40 +26,46 @@ ChartJS.register(
   LineElement,
   Tooltip,
   Legend
-)
+);
 
-/* ---------------- Table filter (hard-coded for now) ---------------- */
+/* ---------------- State ---------------- */
+const tableFilter = ref("penguins");
+const pipes = ref([]);
+const wrapperWidth = ref(800); // default before first measure
 
-const tableFilter = ref("penguins")
-
-/* ---------------- Load pipes.json ---------------- */
-
-const pipes = ref([])
-
+/* ---------------- Load data ---------------- */
 onMounted(async () => {
-  const res = await fetch("data/pipes.json")
-  const json = await res.json()
-  pipes.value = json.pipes
-})
+  const res = await fetch("data/pipes.json");
+  const json = await res.json();
+  pipes.value = json.pipes;
+
+  // observe wrapper width
+  const wrapper = document.querySelector(".plot-wrapper");
+  if (wrapper) {
+    const ro = new ResizeObserver(entries => {
+      wrapperWidth.value = entries[0].contentRect.width;
+    });
+    ro.observe(wrapper);
+
+    onBeforeUnmount(() => ro.disconnect());
+  }
+});
 
 /* ---------------- Filtered pipes ---------------- */
-
 const filteredPipes = computed(() =>
   pipes.value.filter(p => p.table === tableFilter.value)
-)
+);
 
-/* ---------------- Matrix axes ---------------- */
-
+/* ---------------- Axes ---------------- */
 const cols = computed(() =>
   [...new Set(filteredPipes.value.map(p => p.columns))]
-)
+);
 
 const tests = computed(() =>
   [...new Set(filteredPipes.value.map(p => p.validation_type))]
-)
+);
 
-/* ---------------- Normalize to matrix ---------------- */
-
+/* ---------------- Normalize ---------------- */
 const rawData = computed(() =>
   cols.value.flatMap(col =>
     tests.value.map(test => ({
@@ -74,24 +78,29 @@ const rawData = computed(() =>
         : 0
     }))
   )
-)
+);
 
-/* ---------------- Color scale ---------------- */
+/* ---------------- Responsive scaling ---------------- */
+const scale = computed(() => {
+  const w = wrapperWidth.value;
 
-function colorForCount(count) {
-  return count === 1 ? "#31572c" : "#ffffff"
-}
+  return {
+    font: Math.max(10, Math.min(14, w / 70)),
+    point: Math.max(4, Math.min(7, w / 150)),
+    gridPadding: Math.max(40, Math.min(90, w * 0.12))
+  };
+});
 
-/* ---------------- Build datasets ---------------- */
+/* ---------------- Color ---------------- */
+const colorForCount = count =>
+  count === 1 ? "#31572c" : "#ffffff";
 
+/* ---------------- Datasets ---------------- */
 const datasets = computed(() =>
   cols.value.map(col => {
     const points = rawData.value
       .filter(d => d.col === col)
-      .map(d => ({
-        x: d.test,
-        y: d.col
-      }))
+      .map(d => ({ x: d.test, y: d.col }));
 
     return {
       label: col,
@@ -99,31 +108,31 @@ const datasets = computed(() =>
       showLine: true,
       borderColor: "lightgray",
       borderWidth: 1,
-      pointRadius: 6,
+      pointRadius: scale.value.point,
       pointBackgroundColor: ctx => {
-        const test = ctx.raw.x
         const match = rawData.value.find(
-          d => d.col === col && d.test === test
-        )
-        return colorForCount(match?.count ?? 0)
+          d => d.col === col && d.test === ctx.raw.x
+        );
+        return colorForCount(match?.count ?? 0);
       }
-    }
+    };
   })
-)
+);
 
 /* ---------------- Chart data ---------------- */
-
 const chartData = computed(() => ({
   datasets: datasets.value
-}))
+}));
 
-/* ---------------- Chart options ---------------- */
-
+/* ---------------- Responsive options ---------------- */
 const options = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false }
+  },
+  layout: {
+    padding: scale.value.gridPadding
   },
   scales: {
     x: {
@@ -131,9 +140,11 @@ const options = computed(() => ({
       labels: tests.value,
       title: {
         display: true,
-        text: "Test"
+        text: "Test",
+        font: { size: scale.value.font + 1 }
       },
       ticks: {
+        font: { size: scale.value.font },
         maxRotation: 45,
         minRotation: 45
       }
@@ -143,9 +154,13 @@ const options = computed(() => ({
       labels: cols.value,
       title: {
         display: true,
-        text: "Column"
+        text: "Column",
+        font: { size: scale.value.font + 1 }
+      },
+      ticks: {
+        font: { size: scale.value.font }
       }
     }
   }
-}))
+}));
 </script>

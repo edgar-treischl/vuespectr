@@ -1,6 +1,9 @@
 <template>
   <div class="heatmap-container">
-    <div ref="chart" class="chart"></div>
+    <!-- Plot wrapper (controls size & ratio) -->
+    <div class="chart-wrapper">
+      <div ref="chart" class="chart"></div>
+    </div>
 
     <!-- Legend -->
     <div class="legend">
@@ -20,86 +23,72 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue"
-import * as echarts from "echarts"
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from "vue";
+import * as echarts from "echarts";
 
-/* ---------------- Refs & instances ---------------- */
+/* ---------------- Refs ---------------- */
+const chart = ref(null);
+let chartInstance = null;
+let observer = null;
 
-const chart = ref(null)
-let chartInstance = null
-let observer = null
-
-/* ---------------- Table filter (hard-coded for now) ---------------- */
-
-const tableFilter = ref("penguins")
+/* ---------------- Table filter ---------------- */
+const tableFilter = ref("penguins");
 
 /* ---------------- Load columns.json ---------------- */
-
-const columnsData = ref([])
+const columnsData = ref([]);
 
 onMounted(async () => {
-  const res = await fetch("data/columns.json")
-  const json = await res.json()
-  columnsData.value = json.columns
-  initChart()
-})
+  const res = await fetch("data/columns.json");
+  const json = await res.json();
+  columnsData.value = json.columns;
+
+  await nextTick();
+  waitForSizeAndInit();
+});
 
 /* ---------------- Filtered columns ---------------- */
-
 const filteredColumns = computed(() =>
   columnsData.value.filter(c => c.table === tableFilter.value)
-)
+);
 
 /* ---------------- Color mapping ---------------- */
-
 const typeColors = {
   factor: "#1f77b4",
   numeric: "#31572c",
   integer: "#31572c",
   NA: "#d62728"
+};
+
+/* ---------------- Wait for layout ---------------- */
+function waitForSizeAndInit() {
+  const el = chart.value;
+  if (!el) return;
+
+  const wrapper = el.parentElement;
+
+  if (wrapper.clientWidth === 0 || wrapper.clientHeight === 0) {
+    requestAnimationFrame(waitForSizeAndInit);
+    return;
+  }
+
+  initChart(wrapper);
 }
 
-/* ---------------- Helpers ---------------- */
+/* ---------------- Init chart ---------------- */
+function initChart(wrapper) {
+  chartInstance = echarts.init(chart.value);
 
-const truncateText = (text, maxChars) => {
-  if (!text) return ""
-  return text.length <= maxChars
-    ? text
-    : text.slice(0, maxChars - 3) + "..."
-}
+  const versions = [...new Set(filteredColumns.value.map(d => d.version))];
+  const columns = [...new Set(filteredColumns.value.map(d => d.column_name))];
 
-/* ---------------- Chart init ---------------- */
-
-function initChart() {
-  if (!chart.value) return
-
-  chartInstance = echarts.init(chart.value)
-
-  const versions = [
-    ...new Set(filteredColumns.value.map(d => d.version))
-  ]
-
-  const columns = [
-    ...new Set(filteredColumns.value.map(d => d.column_name))
-  ]
-
-  // Dynamic font size
-  const tileFontSize = Math.max(
-    12,
-    Math.min(18, 300 / Math.max(columns.length, versions.length))
-  )
-
-  /* -------- Build heatmap matrix -------- */
-
-  const seriesData = []
-
+  const seriesData = [];
   columns.forEach((col, y) => {
     versions.forEach((ver, x) => {
       const item = filteredColumns.value.find(
         d => d.version === ver && d.column_name === col
-      )
+      );
 
-      const type = item?.type || "NA"
+      const type = item?.type || "NA";
 
       seriesData.push({
         value: [x, y, 1],
@@ -107,31 +96,32 @@ function initChart() {
         labelText: type,
         description: item?.description ?? "",
         label: item?.label ?? col
-      })
-    })
-  })
-
-  /* ---------------- Chart option ---------------- */
+      });
+    });
+  });
 
   const option = {
     tooltip: {
       formatter: params => {
-        const col = columns[params.data.value[1]]
-        const ver = versions[params.data.value[0]]
-
+        const col = columns[params.data.value[1]];
+        const ver = versions[params.data.value[0]];
         return `
           <b>${params.data.label}</b><br/>
           Column: ${col}<br/>
           Version: ${ver}<br/>
           Type: ${params.data.labelText}<br/>
           ${params.data.description || ""}
-        `
+        `;
       }
     },
     xAxis: {
       type: "category",
       data: versions,
-      axisLabel: { rotate: 0, fontSize: 14, color: "#333", formatter: value => value.slice(0, 10) },
+      axisLabel: {
+        fontSize: 14,
+        color: "#333",
+        formatter: v => v.slice(0, 10)
+      },
       axisLine: { lineStyle: { color: "#888" } }
     },
     yAxis: {
@@ -152,9 +142,7 @@ function initChart() {
       {
         type: "heatmap",
         data: seriesData,
-        label: {
-          show: false
-        },
+        label: { show: false },
         emphasis: {
           itemStyle: {
             borderColor: "#000",
@@ -174,45 +162,46 @@ function initChart() {
       max: 1,
       inRange: { color: ["#ffffff", "#ffffff"] }
     }
-  }
+  };
 
-  chartInstance.setOption(option)
-
-  /* -------- Resize observer -------- */
+  chartInstance.setOption(option);
 
   observer = new ResizeObserver(() => {
-    chartInstance?.resize()
-  })
-  observer.observe(chart.value)
+    chartInstance?.resize();
+  });
+  observer.observe(wrapper);
 }
 
 /* ---------------- Cleanup ---------------- */
-
 onBeforeUnmount(() => {
-  observer?.disconnect()
-  chartInstance?.dispose()
-})
+  observer?.disconnect();
+  chartInstance?.dispose();
+});
 </script>
 
 <style scoped>
 .heatmap-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
 }
 
-.chart {
+/* Plot wrapper controls ratio */
+.chart-wrapper {
   width: 95%;
-  height: 500px;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  position: relative;
 }
 
-h4 {
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: #444;
+/* Chart fills wrapper */
+.chart {
+  position: absolute;
+  inset: 0;
 }
 
+/* Legend */
 .legend {
   margin-top: 10px;
   display: flex;
