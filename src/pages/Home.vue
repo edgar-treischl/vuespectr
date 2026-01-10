@@ -30,7 +30,7 @@
         <p class="hero-narrative mb-8">
           Spectr silently infiltrates the OddJob repository, extracting validation
           results and decoding them into sleek visual intel. Validation results and pointer
-          data create a rich meta data for a complete audit trail.
+          data create a rich meta data for a complete audit trail. Select the data and inspect the results.
         </p>
 
         <!-- Selector block -->
@@ -38,7 +38,7 @@
           <v-select
             v-model="store.table"
             :items="tableOptions"
-            label="Select dataset"
+            label="Select Data"
             prepend-inner-icon="mdi-table"
             variant="outlined"
             density="comfortable"
@@ -48,7 +48,7 @@
           <v-select
             v-model="store.version"
             :items="versionOptions"
-            label="Select version"
+            label="Optional: Older Version"
             prepend-inner-icon="mdi-tag-outline"
             variant="outlined"
             density="comfortable"
@@ -58,7 +58,7 @@
 
         <!-- Subtle hint -->
         <div class="mt-8 hero-hint">
-          Validation insights will appear once a dataset is selected
+          Monitoring data made simple with Spectr.
         </div>
       </v-col>
     </v-row>
