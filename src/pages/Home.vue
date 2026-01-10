@@ -1,46 +1,83 @@
 <template>
   <v-container fluid class="min-vh-100 pa-4">
     <v-row class="fill-height">
-      <!-- LEFT COLUMN: CONTEXT + CONTROLS -->
-      <v-col cols="12" md="6" class="pa-4 selectors-col">
-        <h2 class="mb-1">💦 InSpectr</h2>
+      <!-- LEFT COLUMN: CONTEXT + GUIDE -->
+      <v-col cols="12" md="6" class="pa-6 selectors-col">
+        <!-- About -->
+        <h2 class="mb-3">🔫 About the app</h2>
         <p class="text-muted mb-6">
-          Automated validation insights for evolving datasets
+          Spectre silently infiltrates the OddJob repository, extracting validation
+          results and decoding them into sleek visual intel. Validation results and pointer
+          data create a rich meta data for a complete audit trail.
         </p>
 
         <!-- What it does -->
-        <v-card variant="tonal" class="pa-4 mb-4">
-          <div class="d-flex align-center mb-2">
+        <v-card class="pa-4 mb-6">
+          <div class="d-flex align-center mb-3">
             <v-icon color="primary" class="mr-2">mdi-radar</v-icon>
             <h5 class="mb-0">What it does</h5>
           </div>
-          <p class="mb-0">
-            InSpectr analyzes validation outputs and pipeline metadata, transforming
-            them into clear, visual diagnostics with a complete audit trail.
+
+          <p class="mb-4">
+            The table on the right side gives an overview of the most recent
+            validation runs. Pick a table name (and version) and SpectreApp visualizes key insights.
           </p>
+
+          <v-list density="compact">
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Overview</strong> — dataset structure at a glance
+              </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Pipe</strong> — validation pipeline steps
+              </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Validation</strong> — detailed validation reports
+              </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Variables</strong> — columns across versions
+              </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Classes</strong> — categorical level changes
+              </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Labels</strong> — dataset categories
+              </v-list-item-title>
+            </v-list-item>
+
+            <v-list-item>
+              <v-list-item-title>
+                <strong>Diff</strong> — pipeline changes via Git
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
         </v-card>
+      </v-col>
 
-        <!-- How to use -->
-        <v-card variant="tonal" class="pa-4 mb-4">
-          <div class="d-flex align-center mb-2">
-            <v-icon color="primary" class="mr-2">mdi-cursor-default-click</v-icon>
-            <h5 class="mb-0">How to use it</h5>
-          </div>
-          <p class="mb-0">
-            Select a dataset and version below to explore schema changes,
-            validation coverage, and detailed reports.
-          </p>
-        </v-card>
-
-        <!-- Current context -->
-
+      <!-- RIGHT COLUMN: ACTIONS + RESULTS -->
+      <v-col cols="12" md="6" class="pa-6">
         <!-- Dataset selection -->
-        <v-card outlined class="pa-4">
+        <v-card class="pa-5 mb-6 mt-12" elevation="2">
           <div class="d-flex align-center mb-3">
-            <v-icon color="tertiary" size="24" class="mr-2">
+            <v-icon color="tertiary" size="22" class="mr-2">
               mdi-database-search
             </v-icon>
-            <h5 class="mb-0">Dataset selection</h5>
+            <h3 class="mb-2">Dataset selection</h3>
           </div>
 
           <p class="text-muted mb-4">
@@ -48,7 +85,7 @@
             data quality insights.
           </p>
 
-          <v-row dense>
+          <v-row>
             <v-col cols="12" md="6">
               <v-select
                 v-model="store.table"
@@ -74,67 +111,21 @@
             </v-col>
           </v-row>
         </v-card>
-      </v-col>
 
-      <!-- RIGHT COLUMN: VIEWS + RESULTS -->
-      <v-col cols="12" md="6" class="pa-4">
-        <!-- Available views -->
-        <v-card outlined class="pa-4 mb-6">
-          <div class="d-flex align-center mb-3">
-            <v-icon color="primary" class="mr-2">
-              mdi-view-dashboard
-            </v-icon>
-            <h5 class="mb-0">Available views</h5>
-          </div>
-
-          <v-list density="compact">
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Overview</strong> — dataset structure at a glance
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Pipe</strong> — validation pipeline steps
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Validation</strong> — detailed validation reports
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Variables</strong> — columns across versions
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Classes</strong> — categorical level changes
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Labels</strong> — dataset categories
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <strong>Diff</strong> — pipeline changes via Git
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
+        <!-- Results -->
+        <v-card class="pa-4" elevation="1">
+          <div class="table-section">
+              <TableOverview
+                :selectedTable="store.table"
+                :selectedVersion="store.version"
+                />
+              </div>
         </v-card>
-
-        <!-- Table -->
-        <TableOverview
-          :selectedTable="store.table"
-          :selectedVersion="store.version"
-        />
       </v-col>
     </v-row>
   </v-container>
 </template>
+
 
 
 
@@ -187,31 +178,100 @@ function updateVersionOptions(table) {
 </script>
 
 <style scoped>
-
+/* ---------- Layout & structure ---------- */
 
 .selectors-col {
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #e6e6e6;
+  background: linear-gradient(
+    180deg,
+    rgba(250, 250, 250, 0.85),
+    rgba(255, 255, 255, 1)
+  );
 }
+
+/* ---------- Typography ---------- */
 
 h2 {
   font-weight: 700;
+  font-size: 2.05rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 h5 {
   font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
 }
 
 p {
-  line-height: 1.55;
+  line-height: 1.4;              /* improved readability */
+  font-size: 1.05rem;            /* slightly toned down */
+  color: #2c2c2c;
 }
 
+/* Muted helper text */
 .text-muted {
   color: #6c757d;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  line-height: 1.35;
+}
+
+/* ---------- Lists ---------- */
+
+.v-list-item {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .v-list-item-title {
   font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+/* ---------- Cards ---------- */
+
+.v-card {
+  border-radius: 10px;
+}
+
+.v-card.pa-4 {
+  padding: 1.25rem !important;
+}
+
+/* ---------- Icons ---------- */
+
+.v-icon {
+  opacity: 0.85;
+}
+
+/* ---------- Subtle polish ---------- */
+
+/* Improve visual rhythm between sections */
+.mb-6 {
+  margin-bottom: 1.75rem !important;
+}
+
+/* Make outlines softer */
+.v-card--variant-outlined {
+  border-color: #e3e3e3;
+}
+
+@media (min-width: 960px) {
+  .selectors-col {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+}
+
+.v-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.table-section {
+  margin-top: 3.5rem;
+  margin-bottom: 3rem;
 }
 
 
