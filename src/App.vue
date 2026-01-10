@@ -1,5 +1,6 @@
 <script setup>
 import Navbar from './components/Navbar.vue';
+import Footer from './components/Footer.vue'
 </script>
 
 <template>
@@ -8,6 +9,7 @@ import Navbar from './components/Navbar.vue';
     <v-main>
       <router-view />
     </v-main>
+    <Footer />
   </v-app>
 </template>
 
@@ -17,8 +19,23 @@ export default {
 };
 </script>
 
+
+
+
 <style>
+
 body {
   font-family: 'Roboto', sans-serif;
+}
+/* Make app full height and flex column */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Make main content grow to fill available space */
+.v-application--wrap {
+  flex: 1 0 auto;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <section v-if="filteredRows.length">
     <header class="table-header">
-      <h2>🏃 Summary Last Run</h2>
+      <h2>🔫 Brief Summary</h2>
     </header>
 
     <table class="overview-table">

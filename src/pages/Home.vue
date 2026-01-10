@@ -20,55 +20,65 @@
           mdi-crosshairs
         </v-icon>
         <h2 class="mb-0">Sp3ctr</h2>
+        <!-- Subtle hint -->
+        <div class="mt-0 hero-hint">
+          Monitoring data made simple.
+        </div>
       </div>
     </div>
 
     <!-- Content Layer below radar -->
     <v-row justify="center" class="w-100 hero-content">
-      <v-col cols="12" md="9" lg="7" class="text-center">
+      <v-col cols="12" md="10" lg="10" class="text-center">
         <!-- Narrative description -->
-        <p class="hero-narrative mb-8">
+        <p class="hero-narrative mb-12">
           Spectr silently infiltrates the OddJob repository, extracting validation
           results and decoding them into sleek visual intel. Validation results and pointer
           data create a rich meta data for a complete audit trail. Select the data and inspect the results.
         </p>
 
-        <!-- Selector block -->
-        <div class="selector-block mx-auto">
-          <v-select
-            v-model="store.table"
-            :items="tableOptions"
-            label="Select Data"
-            prepend-inner-icon="mdi-table"
-            variant="outlined"
-            density="comfortable"
-            class="mb-4"
-            hide-details
-          />
-          <v-select
-            v-model="store.version"
-            :items="versionOptions"
-            label="Optional: Older Version"
-            prepend-inner-icon="mdi-tag-outline"
-            variant="outlined"
-            density="comfortable"
-            hide-details
-          />
-        </div>
+        <!-- Selector + Table side by side -->
+        <v-row dense class="selector-table-row" align="stretch">
+          <!-- Selector Box -->
+          <v-col cols="12" md="4">
+            <v-card outlined class="pa-4">
+              <h2 class="mb-4">🎩 Select Data</h2>
+              <v-select
+                v-model="store.table"
+                :items="tableOptions"
+                label="Data"
+                prepend-inner-icon="mdi-table"
+                variant="outlined"
+                density="comfortable"
+                class="mb-4"
+                hide-details
+              />
+              <v-select
+                v-model="store.version"
+                :items="versionOptions"
+                label="Optional: Version"
+                prepend-inner-icon="mdi-tag-outline"
+                variant="outlined"
+                density="comfortable"
+                hide-details
+              />
+            </v-card>
+          </v-col>
 
-        <!-- Subtle hint -->
-        <div class="mt-8 hero-hint">
-          Monitoring data made simple with Spectr.
-        </div>
+          <!-- Table Box -->
+          <v-col cols="12" md="8">
+            <v-card outlined class="pa-4">
+              <TableOverview
+                :selectedTable="store.table"
+                :selectedVersion="store.version"
+              />
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
 </template>
-
-
-
-
-
 
 
 <script setup>
@@ -258,4 +268,41 @@ function updateVersionOptions(table) {
   0% { transform: translate(-50%, -50%) rotate(0deg); }
   100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
+
+.table-header h2 {
+  margin-bottom: 0.75rem;
+}
+
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.overview-table th,
+.overview-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+}
+
+.overview-table th {
+  background: #f5f5f5;
+}
+
+.overview-table a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.overview-table a:hover {
+  text-decoration: underline;
+}
+
+.selector-table-row .v-card {
+  height: 100%;
+}
+
+
 </style>
