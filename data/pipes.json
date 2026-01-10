@@ -1,0 +1,228 @@
+{
+  "pipes": [
+    {
+      "step_number": " 1",
+      "validation_type": "col_exists",
+      "columns": "species",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 2",
+      "validation_type": "col_exists",
+      "columns": "island",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 3",
+      "validation_type": "col_exists",
+      "columns": "bill_length_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 4",
+      "validation_type": "col_exists",
+      "columns": "bill_depth_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 5",
+      "validation_type": "col_exists",
+      "columns": "flipper_length_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 6",
+      "validation_type": "col_exists",
+      "columns": "body_mass_g",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 7",
+      "validation_type": "col_exists",
+      "columns": "sex",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 8",
+      "validation_type": "col_exists",
+      "columns": "year",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": " 9",
+      "validation_type": "col_is_character",
+      "columns": "species",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "10",
+      "validation_type": "col_is_character",
+      "columns": "island",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "11",
+      "validation_type": "col_is_character",
+      "columns": "sex",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "12",
+      "validation_type": "col_is_numeric",
+      "columns": "bill_length_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "13",
+      "validation_type": "col_is_numeric",
+      "columns": "bill_depth_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "14",
+      "validation_type": "col_is_numeric",
+      "columns": "flipper_length_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "15",
+      "validation_type": "col_is_numeric",
+      "columns": "body_mass_g",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "16",
+      "validation_type": "col_is_integer",
+      "columns": "year",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "17",
+      "validation_type": "col_vals_in_set",
+      "columns": "species",
+      "parameters": "set=c(\"octopussy\", \"Adelie\", \"Chinstrap\", \"Gentoo\")",
+      "table": "penguins"
+    },
+    {
+      "step_number": "18",
+      "validation_type": "col_vals_in_set",
+      "columns": "island",
+      "parameters": "set=c(\"Torgersen\", \"Biscoe\", \"Dream\")",
+      "table": "penguins"
+    },
+    {
+      "step_number": "19",
+      "validation_type": "col_vals_in_set",
+      "columns": "sex",
+      "parameters": "set=c(\"male\", \"female\")",
+      "table": "penguins"
+    },
+    {
+      "step_number": "20",
+      "validation_type": "col_vals_between",
+      "columns": "bill_length_mm",
+      "parameters": "left=34; right=60",
+      "table": "penguins"
+    },
+    {
+      "step_number": "21",
+      "validation_type": "col_vals_between",
+      "columns": "bill_depth_mm",
+      "parameters": "left=13; right=22",
+      "table": "penguins"
+    },
+    {
+      "step_number": "22",
+      "validation_type": "col_vals_between",
+      "columns": "flipper_length_mm",
+      "parameters": "left=170; right=240",
+      "table": "penguins"
+    },
+    {
+      "step_number": "23",
+      "validation_type": "col_vals_between",
+      "columns": "body_mass_g",
+      "parameters": "left=2700; right=6300",
+      "table": "penguins"
+    },
+    {
+      "step_number": "24",
+      "validation_type": "col_vals_between",
+      "columns": "year",
+      "parameters": "left=2007; right=2009",
+      "table": "penguins"
+    },
+    {
+      "step_number": "25",
+      "validation_type": "col_vals_not_null",
+      "columns": "species",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "26",
+      "validation_type": "col_vals_not_null",
+      "columns": "island",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "27",
+      "validation_type": "col_vals_not_null",
+      "columns": "bill_length_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "28",
+      "validation_type": "col_vals_not_null",
+      "columns": "bill_depth_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "29",
+      "validation_type": "col_vals_not_null",
+      "columns": "flipper_length_mm",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "30",
+      "validation_type": "col_vals_not_null",
+      "columns": "body_mass_g",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "31",
+      "validation_type": "col_vals_not_null",
+      "columns": "sex",
+      "parameters": "",
+      "table": "penguins"
+    },
+    {
+      "step_number": "32",
+      "validation_type": "col_vals_not_null",
+      "columns": "year",
+      "parameters": "",
+      "table": "penguins"
+    }
+  ]
+}

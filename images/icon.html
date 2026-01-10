@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sp3ctr Radar Icon</title>
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+  <style>
+    /* Full icon container */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 256px;
+      height: 256px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: white; /* or transparent */
+    }
+
+    .hero-radar {
+      position: relative;
+      width: 256px;
+      height: 256px;
+    }
+
+    /* Radar rings — darker and thicker for small sizes */
+    .radar-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border: 3px solid rgba(0, 0, 0, 0.35); /* stronger and more visible */
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(0.6px); /* subtle blur but still visible */
+    }
+    .ring1 { width: 64px; height: 64px; }
+    .ring2 { width: 128px; height: 128px; }
+    .ring3 { width: 192px; height: 192px; }
+
+    /* Crosshairs — darker and thicker */
+    .crosshair {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.6); /* darker */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .crosshair.vertical { width: 3px; height: 192px; }
+    .crosshair.horizontal { width: 192px; height: 3px; }
+
+    /* Optional sweep — keep subtle */
+    .radar-sweep {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 192px;
+      height: 192px;
+      border-radius: 50%;
+      background: conic-gradient(rgba(0,0,0,0.08) 0deg, transparent 40deg);
+      transform: translate(-50%, -50%);
+      animation: sweep 18s linear infinite;
+      filter: blur(0.8px);
+    }
+
+    @keyframes sweep {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Center icon */
+    .radar-center-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: #1a73e8;
+      text-shadow: 0 0 2px rgba(0,0,0,0.5); /* improves visibility on small icons */
+    }
+
+  </style>
+</head>
+<body>
+  <div class="hero-radar">
+    <div class="radar-ring ring1"></div>
+    <div class="radar-ring ring2"></div>
+    <div class="radar-ring ring3"></div>
+
+    <div class="crosshair vertical"></div>
+    <div class="crosshair horizontal"></div>
+
+    <div class="radar-sweep"></div>
+
+    <i class="mdi mdi-crosshairs radar-center-icon"></i>
+  </div>
+</body>
+</html>
