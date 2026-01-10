@@ -7,10 +7,10 @@
     <v-container class="text-center">
       <span>
         Created with 
-        <a href="https://example.com/magic-hat" target="_blank" rel="noopener" class="footer-link">🎩</a>, 
-        <a href="https://example.com/shiny" target="_blank" rel="noopener" class="footer-link">shiny</a>, and 
-        <a href="https://example.com/octopus" target="_blank" rel="noopener" class="footer-link">🐙</a> | 
-        By: <a href="https://github.com/edgartreischl" target="_blank" rel="noopener" class="footer-link">Edgar Treischl</a>
+        <a href="https://gitlab.lrz.de/edgar-treischl/OddJob" target="_blank" rel="noopener" class="footer-link">🎩</a>, 
+        <a href="https://vuejs.org" target="_blank" rel="noopener" class="footer-link">Vue.js</a>, and 
+        <a href="https://gitlab.lrz.de/edgar-treischl/octopussy" target="_blank" rel="noopener" class="footer-link">🐙</a> | 
+        By: <a href="https://edgar-treischl.de" target="_blank" rel="noopener" class="footer-link">Edgar Treischl</a>
       </span>
     </v-container>
   </v-footer>

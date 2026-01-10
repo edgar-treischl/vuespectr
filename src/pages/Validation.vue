@@ -55,7 +55,6 @@
 
             <div v-else-if="error" class="error">
               <v-icon color="error" size="36">mdi-alert-circle</v-icon>
-              <h5 class="mt-2">Report Not Available</h5>
               <p>
                 Table: <strong>{{ store.table }}</strong><br />
                 Version: <strong>{{ store.version }}</strong><br />
