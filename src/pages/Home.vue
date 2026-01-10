@@ -16,12 +16,12 @@
 
       <!-- Icon and Hero Title inside radar -->
       <div class="radar-title">
-        <v-icon size="56" color="primary" class="mb-2">
+        <v-icon size="54" color="tertiary" class="mb-0">
           mdi-crosshairs
         </v-icon>
         <h2 class="mb-0">Sp3ctr</h2>
         <!-- Subtle hint -->
-        <div class="mt-0 hero-hint">
+        <div class="mt-0 hero-hint" style="display: inline-block; transform: translateX(-6px);">
           Monitoring data made simple.
         </div>
       </div>
@@ -33,8 +33,7 @@
         <!-- Narrative description -->
         <p class="hero-narrative mb-12">
           Spectr silently infiltrates the OddJob repository, extracting validation
-          results and decoding them into sleek visual intel. Validation results and pointer
-          data create a rich meta data for a complete audit trail. Select the data and inspect the results.
+          results and decoding them into sleek visual intel. Select the data and inspect the results.
         </p>
 
         <!-- Selector + Table side by side -->
